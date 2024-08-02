@@ -1,7 +1,0 @@
-autopep8==1.5.5
-channels==3.0.3
-channels-redis==3.2.0
-daphne==3.0.1
-Django==3.1.7
-flake8==3.8.4
-tensorflow==2.10.0
