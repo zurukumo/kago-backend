@@ -1,0 +1,22 @@
+FROM python:3.10.14 AS builder
+
+RUN apt update && apt install -y libhdf5-dev
+
+WORKDIR /app
+
+ENV PIPENV_VENV_IN_PROJECT=1
+RUN pip install --upgrade pip && pip install pipenv
+
+COPY Pipfile Pipfile.lock ./
+RUN pipenv install --deploy
+
+
+FROM python:3.10.14 AS runtime
+
+RUN apt update && apt install -y libhdf5-dev
+
+WORKDIR /app
+
+COPY --from=builder /app/.venv ./.venv
+
+COPY . .

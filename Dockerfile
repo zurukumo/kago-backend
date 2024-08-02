@@ -10,5 +10,3 @@ COPY Pipfile Pipfile.lock ./
 RUN pipenv install --dev --deploy --system
 
 COPY . .
-
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

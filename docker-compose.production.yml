@@ -1,15 +1,16 @@
 services:
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:${SERVER_PORT:-8000}
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    command: .venv/bin/python manage.py runserver 0.0.0.0:${SERVER_PORT:-8000}
     env_file: .env
     tty: true
     ports:
       - 8002:${SERVER_PORT:-8000}
-    volumes:
-      - .:/app
     depends_on:
       - redis
+    restart: unless-stopped
 
   redis:
     image: redis:7.2
@@ -17,6 +18,7 @@ services:
       - 6379:6379
     volumes:
       - redis-data:/data
+    restart: unless-stopped
 
 volumes:
   redis-data:
