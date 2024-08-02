@@ -9,15 +9,13 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/
 
 import os
 
-import mahjong.routing
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
+import mahjong.routing
 
-# application = get_asgi_application()
-# django_asgi_app = get_asgi_application()
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 
 
 application = ProtocolTypeRouter({

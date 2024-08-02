@@ -21,23 +21,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'alpn!t*sbi*qsyis9m37ximzjnrn=6zl_2&njyd#j_s8@3)h@@'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = [
-    'kago-backend-45858670ab74.herokuapp.com'
-]
+ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
 
 # Application definition
-
 INSTALLED_APPS = [
+    # サードパーティー
+    'daphne',
+    'channels',
+    'django_extensions',
     # 独自
     'mahjong',
-    # サードパーティー
-    'channels',
     # デフォルト
     'django.contrib.admin',
     'django.contrib.auth',
@@ -83,7 +82,8 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [os.environ.get('REDIS_URL', 'redis://redis:6379')],
+            'hosts': [(os.environ.get('REDIS_HOST', 'redis'),
+                       os.environ.get('REDIS_PORT', 6379))],
         },
     },
 }
@@ -92,12 +92,7 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = {}
 
 
 # Password validation
