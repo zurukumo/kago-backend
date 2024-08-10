@@ -10,6 +10,7 @@ daphne = "*"
 django = "*"
 django-extensions = "*"
 tensorflow = "*"
+kago-utils = "*"
 
 [dev-packages]
 autopep8 = "*"

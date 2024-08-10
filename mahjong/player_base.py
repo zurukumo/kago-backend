@@ -1,4 +1,7 @@
-from .shanten import calc_shanten, get_yuko
+from kago_utils.hai import Hai136List
+from kago_utils.shanten import Shanten
+
+from .shanten import get_yuko
 
 
 class PlayerBase:
@@ -12,23 +15,9 @@ class PlayerBase:
         return [[i % 4, self.game.players[i % 4]] for i in range(self.position, self.position + 4)]
 
     def calc_shanten(self, add=[], remove=[]):
-        tehai = [0] * 34
-        for p in self.tehai:
-            tehai[p // 4] += 1
-        for p in add:
-            tehai[p // 4] += 1
-        for p in remove:
-            tehai[p // 4] -= 1
-
-        return calc_shanten(tehai, len(self.huro))
+        jun_tehai = Hai136List(self.tehai) + Hai136List(add) - Hai136List(remove)
+        return Shanten.calculate_shanten(jun_tehai, len(self.huro))
 
     def get_yuko(self, add=[], remove=[]):
-        tehai = [0] * 34
-        for p in self.tehai:
-            tehai[p // 4] += 1
-        for p in add:
-            tehai[p // 4] += 1
-        for p in remove:
-            tehai[p // 4] -= 1
-
-        return get_yuko(tehai, [4] * 34, len(self.huro))
+        jun_tehai = Hai136List(self.tehai) + Hai136List(add) - Hai136List(remove)
+        return get_yuko(jun_tehai, n_huro=len(self.huro))
