@@ -1,9 +1,8 @@
 from .agari import Agari
 from .const import Const
 
+
 # TODO フリテンツモしない
-
-
 class PlayerJudge:
     def can_tsumoho(self):
         if self.game.teban != self.position:
