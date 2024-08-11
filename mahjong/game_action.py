@@ -1,8 +1,8 @@
 from random import shuffle
 
 from .const import Const
-from .kago import Kago
 from .human import Human
+from .kago import Kago
 
 
 class GameAction:
@@ -42,7 +42,7 @@ class GameAction:
         for player in self.players:
             player.tehai = []
             player.kawa = []
-            player.huro = []
+            player.huuro = []
 
             player.richi_pc = None
             player.richi_pai = None

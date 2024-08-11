@@ -38,7 +38,7 @@ class PlayerAction:
 
         return {
             'tehai': self.tehai,
-            'huro': self.huro,
+            'huuro': self.huuro,
             'yakus': yakus,
             'doras': doras,
             'uradoras': uradoras,
@@ -54,7 +54,7 @@ class PlayerAction:
     def ankan(self, pais):
         for i in pais:
             self.tehai.pop(self.tehai.index(i))
-        self.huro.append({'type': 'ankan', 'pais': pais, 'who': (self.game.teban - self.position) % 4,
+        self.huuro.append({'type': 'ankan', 'pais': pais, 'who': (self.game.teban - self.position) % 4,
                           'fromWho': (self.game.teban - self.position) % 4})
         self.game.n_kan += 1
         self.game.pc += 10
@@ -114,7 +114,7 @@ class PlayerAction:
 
         return {
             'tehai': self.tehai,
-            'huro': self.huro,
+            'huuro': self.huuro,
             'yakus': yakus,
             'doras': doras,
             'uradoras': uradoras,
@@ -126,7 +126,7 @@ class PlayerAction:
         for i in pais:
             if i != pai:
                 self.tehai.pop(self.tehai.index(i))
-        self.huro.append({'type': 'pon', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
+        self.huuro.append({'type': 'pon', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
                           'fromWho': (self.game.last_teban - self.position) % 4})
         self.game.players[self.game.last_teban].kawa.pop(
             self.game.players[self.game.last_teban].kawa.index(pai)
@@ -138,7 +138,7 @@ class PlayerAction:
         for i in pais:
             if i != pai:
                 self.tehai.pop(self.tehai.index(i))
-        self.huro.append({'type': 'chi', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
+        self.huuro.append({'type': 'chi', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
                           'fromWho': (self.game.last_teban - self.position) % 4})
         self.game.players[self.game.last_teban].kawa.pop(
             self.game.players[self.game.last_teban].kawa.index(pai)
@@ -179,9 +179,9 @@ class PlayerAction:
             if player.richi_pai is not None:
                 richi_pais.append(player.richi_pai)
 
-        huros = []
+        huuros = []
         for _, player in self.prange():
-            huros.append(player.huro)
+            huuros.append(player.huuro)
 
         dora = self.game.dora[:self.game.n_dora] + self.game.make_dummies(self.game.dora[self.game.n_dora:5])
 
@@ -194,7 +194,7 @@ class PlayerAction:
             'tehais': tehais,
             'kawas': kawas,
             'richiPais': richi_pais,
-            'huros': huros,
+            'huuros': huuros,
             'kyoku': self.game.kyoku,
             'honba': self.game.honba,
             'kyotaku': self.game.kyotaku,

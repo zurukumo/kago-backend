@@ -47,8 +47,8 @@ class PlayerJudge:
         if self.game.state not in [Const.TSUMO_STATE, Const.NOTICE1_STATE, Const.DAHAI_STATE]:
             # print('ステート異常')
             return False
-        huro_types = [huro['type'] for huro in self.huro]
-        if len(huro_types) - huro_types.count('ankan') != 0:
+        huuro_types = [huuro['type'] for huuro in self.huuro]
+        if len(huuro_types) - huuro_types.count('ankan') != 0:
             # print('門前じゃない')
             return False
         if self.score < 1000:

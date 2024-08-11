@@ -16,8 +16,8 @@ class PlayerBase:
 
     def calc_shanten(self, add=[], remove=[]):
         jun_tehai = Hai136List(self.tehai) + Hai136List(add) - Hai136List(remove)
-        return Shanten.calculate_shanten(jun_tehai, len(self.huro))
+        return Shanten.calculate_shanten(jun_tehai, len(self.huuro))
 
     def get_yuko(self, add=[], remove=[]):
         jun_tehai = Hai136List(self.tehai) + Hai136List(add) - Hai136List(remove)
-        return get_yuko(jun_tehai, n_huro=len(self.huro))
+        return get_yuko(jun_tehai, n_huuro=len(self.huuro))

@@ -45,12 +45,12 @@ class Kago(Player):
 
         # 副露
         for _, player in self.prange():
-            huro = [0] * 34
-            for h in player.huro:
+            huuro = [0] * 34
+            for h in player.huuro:
                 for pai in h['pais']:
-                    huro[pai // 4] += 1
+                    huuro[pai // 4] += 1
             for i in range(1, 4 + 1):
-                row += [1 if huro[j] >= i else 0 for j in range(34)]
+                row += [1 if huuro[j] >= i else 0 for j in range(34)]
 
         # ドラ
         dora = [0] * 34
