@@ -51,13 +51,12 @@ class PlayerMessage:
         })
 
     def riichi_complete_message(self):
-        who = (self.game.teban - self.position) % 4
         self.actions.append({
             'type': 'riichi_complete_message',
             'body': {
-                'who': who,
-                'score': self.game.players[who].score,
-                'riichi': self.game.players[who].is_riichi_complete
+                'who': (self.game.teban - self.position) % 4,
+                'score': self.game.players[self.game.teban].score,
+                'is_riichi_completed': self.game.players[self.game.teban].is_riichi_completed
             }
         })
 
@@ -67,7 +66,7 @@ class PlayerMessage:
             'body': {
                 'who': (self.game.teban - self.position) % 4,
                 'pai': pai,
-                'voice': bool(not self.game.players[self.game.teban].is_riichi_complete)
+                'voice': bool(not self.game.players[self.game.teban].is_riichi_completed)
             }
         })
 
