@@ -219,7 +219,7 @@ class GameAction:
 
         return {
             'scores': scores,
-            'scoreMovements': score_movements
+            'score_movements': score_movements
         }
 
     def next_kyoku(self):

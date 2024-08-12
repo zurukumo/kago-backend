@@ -42,7 +42,7 @@ class PlayerAction:
             'doras': doras,
             'uradoras': uradoras,
             'scores': [player.score for player in self.game.players],
-            'scoreMovements': score_movements,
+            'score_movements': score_movements,
         }
 
     def tsumo(self, pai):
@@ -118,7 +118,7 @@ class PlayerAction:
             'doras': doras,
             'uradoras': uradoras,
             'scores': [player.score for player in self.game.players],
-            'scoreMovements': score_movements,
+            'score_movements': score_movements,
         }
 
     def pon(self, pais, pai):
