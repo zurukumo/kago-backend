@@ -25,8 +25,8 @@ class PlayerMessage:
         data = {
             'type': 'tsumo_message',
             'body': {
-                    'who': (self.game.teban - self.position) % 4,
-                    'rest': len(self.game.yama)
+                'who': (self.game.teban - self.position) % 4,
+                'n_yama': len(self.game.yama)
             }
         }
 
@@ -47,21 +47,21 @@ class PlayerMessage:
             }
         })
 
-    def richi_complete_message(self):
+    def riichi_complete_message(self):
         self.actions.append({
-            'type': 'richi_complete_message',
+            'type': 'riichi_complete_message',
             'body': {
                 'scores': [player.score for _, player in self.prange()],
-                'richis': [player.is_richi_complete for _, player in self.prange()]
+                'riichis': [player.is_riichi_complete for _, player in self.prange()]
             }
         })
 
-    def richi_bend_message(self, pai):
+    def riichi_bend_message(self, pai):
         self.actions.append({
-            'type': 'richi_bend_message',
+            'type': 'riichi_bend_message',
             'body': {
                 'pai': pai,
-                'voice': bool(not self.game.players[self.game.teban].is_richi_complete)
+                'voice': bool(not self.game.players[self.game.teban].is_riichi_complete)
             }
         })
 
@@ -72,7 +72,7 @@ class PlayerMessage:
                 'pais': pais,
                 'dummies': self.game.make_dummies(pais),
                 'who': (self.game.teban - self.position) % 4,
-                'fromWho': (self.game.teban - self.position) % 4
+                'from_who': (self.game.teban - self.position) % 4
             }
         })
 
@@ -94,7 +94,7 @@ class PlayerMessage:
                 'pais': pais,
                 'dummies': self.game.make_dummies(pais),
                 'who': (self.game.teban - self.position) % 4,
-                'fromWho': (self.game.last_teban - self.position) % 4
+                'from_who': (self.game.last_teban - self.position) % 4
             }
         })
 
@@ -106,7 +106,7 @@ class PlayerMessage:
                 'pais': pais,
                 'dummies': self.game.make_dummies(pais),
                 'who': (self.game.teban - self.position) % 4,
-                'fromWho': (self.game.last_teban - self.position) % 4
+                'from_who': (self.game.last_teban - self.position) % 4
             }
         })
 
@@ -117,7 +117,7 @@ class PlayerMessage:
             'body': {
                 'pai': pai,
                 'dummy': self.game.make_dummy(pai),
-                'rest': len(self.game.yama)
+                'n_yama': len(self.game.yama)
             }
         })
 
@@ -152,22 +152,22 @@ class PlayerMessage:
         else:
             self.game.tsumoho_decisions[self.position] = False
 
-    def richi_notice_message(self):
+    def riichi_notice_message(self):
         for i in self.tehai:
-            if self.can_richi_declare(i):
+            if self.can_riichi_declare(i):
                 self.actions.append({
-                    'type': 'richi_notice_message',
+                    'type': 'riichi_notice_message',
                 })
                 break
 
-    def richi_declare_notice_message(self):
+    def riichi_declare_notice_message(self):
         action = {
-            'type': 'richi_declare_notice_message',
+            'type': 'riichi_declare_notice_message',
             'body': []
         }
 
         for i in self.tehai:
-            if self.can_richi_declare(i):
+            if self.can_riichi_declare(i):
                 action['body'].append({
                     'pai': i,
                 })
@@ -220,7 +220,7 @@ class PlayerMessage:
                             'pai': self.game.last_dahai,
                             'pais': pais,
                             'dummies': self.game.make_dummies(pais),
-                            'fromWho': (self.game.last_teban - self.position) % 4
+                            'from_who': (self.game.last_teban - self.position) % 4
                         })
                         done[i // 4][1] = 1
             else:
@@ -231,7 +231,7 @@ class PlayerMessage:
                             'pai': self.game.last_dahai,
                             'pais': pais,
                             'dummies': self.game.make_dummies(pais),
-                            'fromWho': (self.game.last_teban - self.position) % 4
+                            'from_who': (self.game.last_teban - self.position) % 4
                         })
                         done[i // 4][0] = 1
 
@@ -260,7 +260,7 @@ class PlayerMessage:
                     'pai': self.game.last_dahai,
                     'pais': pais,
                     'dummies': self.game.make_dummies(pais),
-                    'fromWho': (self.game.last_teban - self.position) % 4
+                    'from_who': (self.game.last_teban - self.position) % 4
                 })
 
         if len(action['body']) == 0:

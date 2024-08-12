@@ -25,39 +25,39 @@ class Agari:
         for i in player.tehai:
             self.tehai[i // 4] += 1
 
-        self.huro = []
-        for h in player.huro:
+        self.huuro = []
+        for h in player.huuro:
             if h['type'] == 'chi':
-                self.huro += [h['pais'][0] // 4, -1, -1]
+                self.huuro += [h['pais'][0] // 4, -1, -1]
             if h['type'] == 'pon':
-                self.huro += [h['pais'][0] // 4, -1, -2]
+                self.huuro += [h['pais'][0] // 4, -1, -2]
             if h['type'] == 'minkan':
-                self.huro += [h['pais'][0] // 4, -1, -8]
+                self.huuro += [h['pais'][0] // 4, -1, -8]
             if h['type'] == 'kakan':
-                self.huro += [h['pais'][0] // 4, -1, -8]
+                self.huuro += [h['pais'][0] // 4, -1, -8]
             if h['type'] == 'ankan':
-                self.huro += [h['pais'][0] // 4, -1, -16]
+                self.huuro += [h['pais'][0] // 4, -1, -16]
 
         if game.teban == player.position:
             self.machi = game.last_tsumo // 4
-            self.ba = [game.kyoku, game.honba, game.kyotaku, player.position, player.position]
+            self.ba = [game.kyoku, game.honba, game.kyoutaku, player.position, player.position]
         else:
             self.tehai[game.last_dahai // 4] += 1
             self.machi = game.last_dahai // 4
-            self.ba = [game.kyoku, game.honba, game.kyotaku, player.position, game.last_teban]
+            self.ba = [game.kyoku, game.honba, game.kyoutaku, player.position, game.last_teban]
 
         self.zenpai = self.tehai[::]
-        for i in range(0, len(self.huro), 3):
-            if self.huro[i + 2] <= -2:
-                self.zenpai[self.huro[i]] += 3
+        for i in range(0, len(self.huuro), 3):
+            if self.huuro[i + 2] <= -2:
+                self.zenpai[self.huuro[i]] += 3
             else:
-                self.zenpai[self.huro[i]] += 1
-                self.zenpai[self.huro[i] + 1] += 1
-                self.zenpai[self.huro[i] + 2] += 1
+                self.zenpai[self.huuro[i]] += 1
+                self.zenpai[self.huuro[i] + 1] += 1
+                self.zenpai[self.huuro[i] + 2] += 1
 
         self.agaris = []
 
-        self.menzen = 1 if len(self.huro) - self.huro.count(-16) * 3 == 0 else 0
+        self.menzen = 1 if len(self.huuro) - self.huuro.count(-16) * 3 == 0 else 0
         self.tsumo = 1 if self.ba[3] == self.ba[4] else 0
 
         # 状況役と全部役を定義
@@ -81,7 +81,7 @@ class Agari:
     def get_ten(self):
         max = [0, 0]
         for agari in self.agaris:
-            for i in range(len(self.huro), 13):
+            for i in range(len(self.huuro), 13):
                 if self.machi == agari[i]:
                     # 双ポンロンの場合明刻に変換
                     if not self.tsumo and i in range(0, 3 * 4, 3) and agari[i + 2] == -4:
@@ -205,7 +205,7 @@ class Agari:
     # 全面子抜き出し
     def get_mentsu(self, tehai, janto, start):
         if sum(self.tehai) == 0:
-            self.agaris.append(self.huro + tehai + [janto, janto])
+            self.agaris.append(self.huuro + tehai + [janto, janto])
             return
 
         if sum(self.tehai[0:start]) != 0:
@@ -309,7 +309,7 @@ class Agari:
             zenbu_yaku[44] = 13
 
         # 45:九蓮宝燈
-        if self.huro == []:
+        if self.huuro == []:
             for i in [0, 9, 18]:
                 if self.zenpai[i] >= 3 and self.zenpai[i + 8] >= 3 and 0 not in self.zenpai[i + 1:i + 8]:
                     zenbu_yaku[45] = 13
@@ -435,22 +435,22 @@ class Agari:
     def get_jokyo_yaku(self):
         jokyo_yaku = [0] * 55
         zenpai = [0] * 34
-        huro_types = []
+        huuro_types = []
         for pai in self.player.tehai:
             zenpai[pai // 4] += 1
-        for huro in self.player.huro:
-            for pai in huro['pais']:
+        for huuro in self.player.huuro:
+            for pai in huuro['pais']:
                 zenpai[pai // 4] += 1
-            huro_types.append(huro['type'])
+            huuro_types.append(huuro['type'])
 
         # 門前自摸
-        if len(huro_types) - huro_types.count('ankan') == 0 and self.game.teban == self.player.position:
+        if len(huuro_types) - huuro_types.count('ankan') == 0 and self.game.teban == self.player.position:
             jokyo_yaku[Agari.YAKU.index('門前清自摸和')] += 1
         # 立直
-        if self.player.is_richi_complete and not 0 <= self.player.richi_pc <= 3:
+        if self.player.is_riichi_complete and not 0 <= self.player.riichi_pc <= 3:
             jokyo_yaku[Agari.YAKU.index('立直')] += 1
         # 一発
-        if self.player.is_richi_complete and self.game.pc - self.player.richi_pc <= 4:
+        if self.player.is_riichi_complete and self.game.pc - self.player.riichi_pc <= 4:
             jokyo_yaku[Agari.YAKU.index('一発')] += 1
         # TODO 槍槓
         # TODO 嶺上開花
@@ -461,7 +461,7 @@ class Agari:
         if self.game.teban != self.player.position and len(self.game.yama) == 0:
             jokyo_yaku[Agari.YAKU.index('河底撈魚')] += 1
         # 両立直
-        if self.player.is_richi_complete and 0 <= self.player.richi_pc <= 3:
+        if self.player.is_riichi_complete and 0 <= self.player.riichi_pc <= 3:
             jokyo_yaku[Agari.YAKU.index('両立直')] += 2
         # 天和
         if self.game.pc == 0 and self.game.teban == self.player.position:
@@ -472,7 +472,7 @@ class Agari:
         # ドラ/裏ドラ
         for i in range(self.game.n_dora):
             jokyo_yaku[Agari.YAKU.index('ドラ')] += zenpai[self.get_dora(self.game.dora[i])]
-            if self.player.is_richi_complete:
+            if self.player.is_riichi_complete:
                 jokyo_yaku[Agari.YAKU.index('裏ドラ')] += zenpai[self.get_dora(self.game.dora[i + 5])]
         # 赤ドラ
         for pai in [16, 52, 88]:

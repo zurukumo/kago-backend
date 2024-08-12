@@ -28,7 +28,7 @@ class PlayerAction:
         for player, score_movement in zip(self.game.players, score_movements):
             player.score += score_movement
 
-        self.game.kyotaku = 0
+        self.game.kyoutaku = 0
         if self.position == self.game.kyoku % 4:
             self.game.honba += 1
         else:
@@ -38,7 +38,7 @@ class PlayerAction:
 
         return {
             'tehai': self.tehai,
-            'huro': self.huro,
+            'huuro': self.huuro,
             'yakus': yakus,
             'doras': doras,
             'uradoras': uradoras,
@@ -54,14 +54,14 @@ class PlayerAction:
     def ankan(self, pais):
         for i in pais:
             self.tehai.pop(self.tehai.index(i))
-        self.huro.append({'type': 'ankan', 'pais': pais, 'who': (self.game.teban - self.position) % 4,
-                          'fromWho': (self.game.teban - self.position) % 4})
+        self.huuro.append({'type': 'ankan', 'pais': pais, 'who': (self.game.teban - self.position) % 4,
+                          'from_who': (self.game.teban - self.position) % 4})
         self.game.n_kan += 1
         self.game.pc += 10
 
-    def richi_declare(self):
-        self.is_richi_declare = True
-        self.richi_pc = self.game.pc
+    def riichi_declare(self):
+        self.is_riichi_declare = True
+        self.riichi_pc = self.game.pc
 
     def dahai(self, pai):
         self.tehai.pop(self.tehai.index(pai))
@@ -70,14 +70,14 @@ class PlayerAction:
         self.game.last_teban = self.game.teban
         self.game.pc += 1
 
-    def richi_complete(self):
+    def riichi_complete(self):
         self.score -= 1000
-        self.is_richi_complete = True
-        self.game.kyotaku += 1
+        self.is_riichi_complete = True
+        self.game.kyoutaku += 1
 
-    def richi(self, pai):
-        if self.is_richi_declare and self.richi_pai not in self.kawa:
-            self.richi_pai = pai
+    def riichi(self, pai):
+        if self.is_riichi_declare and self.riichi_pai not in self.kawa:
+            self.riichi_pai = pai
 
     def ronho(self):
         agari = Agari(self, self.game)
@@ -91,7 +91,7 @@ class PlayerAction:
         for i in range(5):
             if i < self.game.n_dora:
                 doras.append(self.game.dora[i])
-                if self.is_richi_complete:
+                if self.is_riichi_complete:
                     uradoras.append(self.game.dora[i + 5])
                 else:
                     uradoras.append(self.game.make_dummy(self.game.dora[i + 5]))
@@ -104,7 +104,7 @@ class PlayerAction:
         for player, score_movement in zip(self.game.players, score_movements):
             player.score += score_movement
 
-        self.game.kyotaku = 0
+        self.game.kyoutaku = 0
         if self.position == self.game.kyoku % 4:
             self.game.honba += 1
         else:
@@ -114,7 +114,7 @@ class PlayerAction:
 
         return {
             'tehai': self.tehai,
-            'huro': self.huro,
+            'huuro': self.huuro,
             'yakus': yakus,
             'doras': doras,
             'uradoras': uradoras,
@@ -126,8 +126,8 @@ class PlayerAction:
         for i in pais:
             if i != pai:
                 self.tehai.pop(self.tehai.index(i))
-        self.huro.append({'type': 'pon', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
-                          'fromWho': (self.game.last_teban - self.position) % 4})
+        self.huuro.append({'type': 'pon', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
+                          'from_who': (self.game.last_teban - self.position) % 4})
         self.game.players[self.game.last_teban].kawa.pop(
             self.game.players[self.game.last_teban].kawa.index(pai)
         )
@@ -138,8 +138,8 @@ class PlayerAction:
         for i in pais:
             if i != pai:
                 self.tehai.pop(self.tehai.index(i))
-        self.huro.append({'type': 'chi', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
-                          'fromWho': (self.game.last_teban - self.position) % 4})
+        self.huuro.append({'type': 'chi', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
+                          'from_who': (self.game.last_teban - self.position) % 4})
         self.game.players[self.game.last_teban].kawa.pop(
             self.game.players[self.game.last_teban].kawa.index(pai)
         )
@@ -149,7 +149,7 @@ class PlayerAction:
     def cancel(self):
         if self.game.teban == self.position:
             self.game.ankan_decisions[self.position] = None
-            self.game.richi_decisions[self.position] = False
+            self.game.riichi_decisions[self.position] = False
 
         self.game.ronho_decisions[self.position] = False
         self.game.minkan_decisions[self.position] = [None, None]
@@ -174,33 +174,33 @@ class PlayerAction:
             else:
                 kawas.append(self.game.make_dummies(player.kawa))
 
-        richi_pais = []
+        riichi_pais = []
         for player in self.game.players:
-            if player.richi_pai is not None:
-                richi_pais.append(player.richi_pai)
+            if player.riichi_pai is not None:
+                riichi_pais.append(player.riichi_pai)
 
-        huros = []
+        huuros = []
         for _, player in self.prange():
-            huros.append(player.huro)
+            huuros.append(player.huuro)
 
         dora = self.game.dora[:self.game.n_dora] + self.game.make_dummies(self.game.dora[self.game.n_dora:5])
 
         scores = [player.score for _, player in self.prange()]
-        richis = [player.is_richi_complete for _, player in self.prange()]
+        riichis = [player.is_riichi_complete for _, player in self.prange()]
         kazes = ['東南西北'[(i - self.game.kyoku) % 4] for i, _ in self.prange()]
-        rest = len(self.game.yama)
+        n_yama = len(self.game.yama)
 
         return {
             'tehais': tehais,
             'kawas': kawas,
-            'richiPais': richi_pais,
-            'huros': huros,
+            'riichi_pais': riichi_pais,
+            'huuros': huuros,
             'kyoku': self.game.kyoku,
             'honba': self.game.honba,
-            'kyotaku': self.game.kyotaku,
+            'kyoutaku': self.game.kyoutaku,
             'dora': dora,
-            'rest': rest,
+            'n_yama': n_yama,
             'scores': scores,
-            'richis': richis,
+            'riichis': riichis,
             'kazes': kazes,
         }

@@ -37,8 +37,8 @@ class MahjongConsumer(AsyncWebsocketConsumer):
             self.game.dahai(data['body']['pai'], self.player)
             await self.next()
 
-        if data_type == 'richi_declare':
-            self.game.richi_declare(self.player)
+        if data_type == 'riichi_declare':
+            self.game.riichi_declare(self.player)
             await self.next()
 
         if data_type == 'ankan':

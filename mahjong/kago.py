@@ -11,7 +11,7 @@ module_dir = os.path.dirname(__file__)
 
 class Kago(Player):
     DAHAI_NETWORK = models.load_model(os.path.join(module_dir, 'networks/dahai.h5'))
-    RICHI_NETWORK = models.load_model(os.path.join(module_dir, 'networks/richi.h5'))
+    RICHI_NETWORK = models.load_model(os.path.join(module_dir, 'networks/riichi.h5'))
     ANKAN_NETWORK = models.load_model(os.path.join(module_dir, 'networks/ankan.h5'))
     PON_NETWORK = models.load_model(os.path.join(module_dir, 'networks/pon.h5'))
     CHI_NETWORK = models.load_model(os.path.join(module_dir, 'networks/chi.h5'))
@@ -45,12 +45,12 @@ class Kago(Player):
 
         # 副露
         for _, player in self.prange():
-            huro = [0] * 34
-            for h in player.huro:
+            huuro = [0] * 34
+            for h in player.huuro:
                 for pai in h['pais']:
-                    huro[pai // 4] += 1
+                    huuro[pai // 4] += 1
             for i in range(1, 4 + 1):
-                row += [1 if huro[j] >= i else 0 for j in range(34)]
+                row += [1 if huuro[j] >= i else 0 for j in range(34)]
 
         # ドラ
         dora = [0] * 34
@@ -61,7 +61,7 @@ class Kago(Player):
 
         # リーチ
         for _, player in self.prange():
-            if player.richi_pai is not None:
+            if player.riichi_pai is not None:
                 row += [1] * 34
             else:
                 row += [0] * 34
@@ -155,8 +155,8 @@ class Kago(Player):
 
         return mk
 
-    def decide_richi(self):
-        if not any([self.can_richi_declare(dahai) for dahai in self.tehai]):
+    def decide_riichi(self):
+        if not any([self.can_riichi_declare(dahai) for dahai in self.tehai]):
             return False
 
         x = self.make_input()
