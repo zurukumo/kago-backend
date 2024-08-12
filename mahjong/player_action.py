@@ -193,7 +193,7 @@ class PlayerAction:
         return {
             'tehais': tehais,
             'kawas': kawas,
-            'richiPais': richi_pais,
+            'richi_pais': richi_pais,
             'huuros': huuros,
             'kyoku': self.game.kyoku,
             'honba': self.game.honba,
