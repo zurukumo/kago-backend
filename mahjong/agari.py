@@ -40,11 +40,11 @@ class Agari:
 
         if game.teban == player.position:
             self.machi = game.last_tsumo // 4
-            self.ba = [game.kyoku, game.honba, game.kyotaku, player.position, player.position]
+            self.ba = [game.kyoku, game.honba, game.kyoutaku, player.position, player.position]
         else:
             self.tehai[game.last_dahai // 4] += 1
             self.machi = game.last_dahai // 4
-            self.ba = [game.kyoku, game.honba, game.kyotaku, player.position, game.last_teban]
+            self.ba = [game.kyoku, game.honba, game.kyoutaku, player.position, game.last_teban]
 
         self.zenpai = self.tehai[::]
         for i in range(0, len(self.huuro), 3):

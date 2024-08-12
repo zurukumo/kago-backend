@@ -28,7 +28,7 @@ class PlayerAction:
         for player, score_movement in zip(self.game.players, score_movements):
             player.score += score_movement
 
-        self.game.kyotaku = 0
+        self.game.kyoutaku = 0
         if self.position == self.game.kyoku % 4:
             self.game.honba += 1
         else:
@@ -73,7 +73,7 @@ class PlayerAction:
     def richi_complete(self):
         self.score -= 1000
         self.is_richi_complete = True
-        self.game.kyotaku += 1
+        self.game.kyoutaku += 1
 
     def richi(self, pai):
         if self.is_richi_declare and self.richi_pai not in self.kawa:
@@ -104,7 +104,7 @@ class PlayerAction:
         for player, score_movement in zip(self.game.players, score_movements):
             player.score += score_movement
 
-        self.game.kyotaku = 0
+        self.game.kyoutaku = 0
         if self.position == self.game.kyoku % 4:
             self.game.honba += 1
         else:
@@ -197,7 +197,7 @@ class PlayerAction:
             'huuros': huuros,
             'kyoku': self.game.kyoku,
             'honba': self.game.honba,
-            'kyotaku': self.game.kyotaku,
+            'kyoutaku': self.game.kyoutaku,
             'dora': dora,
             'rest': rest,
             'scores': scores,

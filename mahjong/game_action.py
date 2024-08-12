@@ -28,7 +28,7 @@ class GameAction:
         # 半荘関連
         self.kyoku = 0
         self.honba = 0
-        self.kyotaku = 0
+        self.kyoutaku = 0
         shuffle(self.players)
         for i, player in enumerate(self.players):
             player.position = i
