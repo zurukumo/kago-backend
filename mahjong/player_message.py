@@ -10,7 +10,7 @@ class PlayerMessage:
             'type': 'start_kyoku_message',
             'body': {
                 'game_info': self.game_info(),
-                'players_info': [player.player_info(False) for i, player in self.prange()]
+                'players_info': [player.player_info(i == self.position) for i, player in self.prange()]
             }
         })
 
