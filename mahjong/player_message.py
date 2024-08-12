@@ -72,7 +72,7 @@ class PlayerMessage:
                 'pais': pais,
                 'dummies': self.game.make_dummies(pais),
                 'who': (self.game.teban - self.position) % 4,
-                'fromWho': (self.game.teban - self.position) % 4
+                'from_who': (self.game.teban - self.position) % 4
             }
         })
 
@@ -94,7 +94,7 @@ class PlayerMessage:
                 'pais': pais,
                 'dummies': self.game.make_dummies(pais),
                 'who': (self.game.teban - self.position) % 4,
-                'fromWho': (self.game.last_teban - self.position) % 4
+                'from_who': (self.game.last_teban - self.position) % 4
             }
         })
 
@@ -106,7 +106,7 @@ class PlayerMessage:
                 'pais': pais,
                 'dummies': self.game.make_dummies(pais),
                 'who': (self.game.teban - self.position) % 4,
-                'fromWho': (self.game.last_teban - self.position) % 4
+                'from_who': (self.game.last_teban - self.position) % 4
             }
         })
 
@@ -220,7 +220,7 @@ class PlayerMessage:
                             'pai': self.game.last_dahai,
                             'pais': pais,
                             'dummies': self.game.make_dummies(pais),
-                            'fromWho': (self.game.last_teban - self.position) % 4
+                            'from_who': (self.game.last_teban - self.position) % 4
                         })
                         done[i // 4][1] = 1
             else:
@@ -231,7 +231,7 @@ class PlayerMessage:
                             'pai': self.game.last_dahai,
                             'pais': pais,
                             'dummies': self.game.make_dummies(pais),
-                            'fromWho': (self.game.last_teban - self.position) % 4
+                            'from_who': (self.game.last_teban - self.position) % 4
                         })
                         done[i // 4][0] = 1
 
@@ -260,7 +260,7 @@ class PlayerMessage:
                     'pai': self.game.last_dahai,
                     'pais': pais,
                     'dummies': self.game.make_dummies(pais),
-                    'fromWho': (self.game.last_teban - self.position) % 4
+                    'from_who': (self.game.last_teban - self.position) % 4
                 })
 
         if len(action['body']) == 0:

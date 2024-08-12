@@ -55,7 +55,7 @@ class PlayerAction:
         for i in pais:
             self.tehai.pop(self.tehai.index(i))
         self.huuro.append({'type': 'ankan', 'pais': pais, 'who': (self.game.teban - self.position) % 4,
-                          'fromWho': (self.game.teban - self.position) % 4})
+                          'from_who': (self.game.teban - self.position) % 4})
         self.game.n_kan += 1
         self.game.pc += 10
 
@@ -127,7 +127,7 @@ class PlayerAction:
             if i != pai:
                 self.tehai.pop(self.tehai.index(i))
         self.huuro.append({'type': 'pon', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
-                          'fromWho': (self.game.last_teban - self.position) % 4})
+                          'from_who': (self.game.last_teban - self.position) % 4})
         self.game.players[self.game.last_teban].kawa.pop(
             self.game.players[self.game.last_teban].kawa.index(pai)
         )
@@ -139,7 +139,7 @@ class PlayerAction:
             if i != pai:
                 self.tehai.pop(self.tehai.index(i))
         self.huuro.append({'type': 'chi', 'pais': pais, 'pai': pai, 'who': (self.game.teban - self.position) % 4,
-                          'fromWho': (self.game.last_teban - self.position) % 4})
+                          'from_who': (self.game.last_teban - self.position) % 4})
         self.game.players[self.game.last_teban].kawa.pop(
             self.game.players[self.game.last_teban].kawa.index(pai)
         )
