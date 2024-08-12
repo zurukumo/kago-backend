@@ -140,7 +140,7 @@ class Kago(Player):
 
     def decide_ankan(self):
         x = self.make_input()
-        y = Kago.ANKAN_NETWORK.predict(x)[0]
+        y = Kago.ANKAN_NETWORK.predict(x, verbose=0)[0]
         mk, mv = None, -float('inf')
 
         for i in range(2):
@@ -160,13 +160,13 @@ class Kago(Player):
             return False
 
         x = self.make_input()
-        y = Kago.RICHI_NETWORK.predict(x)[0]
+        y = Kago.RICHI_NETWORK.predict(x, verbose=0)[0]
 
         return bool(y[1] > y[0])
 
     def decide_dahai(self):
         x = self.make_input()
-        y = Kago.DAHAI_NETWORK.predict(x)[0]
+        y = Kago.DAHAI_NETWORK.predict(x, verbose=0)[0]
         mk, mv = -1, -float('inf')
 
         for i in range(34):
@@ -187,7 +187,7 @@ class Kago(Player):
 
     def decide_pon(self):
         x = self.make_input()
-        y = Kago.PON_NETWORK.predict(x)[0]
+        y = Kago.PON_NETWORK.predict(x, verbose=0)[0]
         mk, mv = None, -float('inf')
 
         last_dahai = self.game.last_dahai
@@ -208,7 +208,7 @@ class Kago(Player):
 
     def decide_chi(self):
         x = self.make_input()
-        y = Kago.CHI_NETWORK.predict(x)[0]
+        y = Kago.CHI_NETWORK.predict(x, verbose=0)[0]
         mk, mv = None, -float('inf')
 
         last_dahai = self.game.last_dahai
