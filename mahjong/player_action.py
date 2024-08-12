@@ -1,8 +1,7 @@
 from .agari import Agari
 
+
 # TODO decisionsはGameじゃなくてPlayerに持たせたほうが良い
-
-
 class PlayerAction:
     def open_dora(self):
         self.game.n_dora += 1
@@ -159,48 +158,33 @@ class PlayerAction:
     def reset_actions(self):
         self.actions = []
 
+    def player_info(self, is_myself: bool):
+        tehai = self.tehai if is_myself else self.game.make_dummies(self.tehai)
+        kawa = self.kawa if is_myself else self.game.make_dummies(self.kawa)
+        huuro = self.huuro
+        riichi_pai = self.riichi_pai
+        score = self.score
+        kaze = '東南西北'[(self.position - self.game.kyoku) % 4]
+        riichi = self.is_riichi_complete
+
+        return {
+            'tehai': tehai,
+            'kawa': kawa,
+            'huuro': huuro,
+            'riichi_pai': riichi_pai,
+            'score': score,
+            'kaze': kaze,
+            'riichi': riichi
+        }
+
     def game_info(self):
-        tehais = []
-        for i, player in self.prange():
-            if i == self.position:
-                tehais.append(player.tehai)
-            else:
-                tehais.append(self.game.make_dummies(player.tehai))
-
-        kawas = []
-        for i, player in self.prange():
-            if i == self.position:
-                kawas.append(player.kawa)
-            else:
-                kawas.append(self.game.make_dummies(player.kawa))
-
-        riichi_pais = []
-        for player in self.game.players:
-            if player.riichi_pai is not None:
-                riichi_pais.append(player.riichi_pai)
-
-        huuros = []
-        for _, player in self.prange():
-            huuros.append(player.huuro)
-
         dora = self.game.dora[:self.game.n_dora] + self.game.make_dummies(self.game.dora[self.game.n_dora:5])
-
-        scores = [player.score for _, player in self.prange()]
-        riichis = [player.is_riichi_complete for _, player in self.prange()]
-        kazes = ['東南西北'[(i - self.game.kyoku) % 4] for i, _ in self.prange()]
         n_yama = len(self.game.yama)
 
         return {
-            'tehais': tehais,
-            'kawas': kawas,
-            'riichi_pais': riichi_pais,
-            'huuros': huuros,
             'kyoku': self.game.kyoku,
             'honba': self.game.honba,
             'kyoutaku': self.game.kyoutaku,
             'dora': dora,
             'n_yama': n_yama,
-            'scores': scores,
-            'riichis': riichis,
-            'kazes': kazes,
         }

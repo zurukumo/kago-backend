@@ -8,7 +8,10 @@ class PlayerMessage:
     def start_kyoku_message(self):
         self.actions.append({
             'type': 'start_kyoku_message',
-            'body': self.game_info()
+            'body': {
+                'game_info': self.game_info(),
+                'players_info': [player.player_info(False) for i, player in self.prange()]
+            }
         })
 
     def tsumoho_message(self, tsumoho):
@@ -48,11 +51,13 @@ class PlayerMessage:
         })
 
     def riichi_complete_message(self):
+        who = (self.game.teban - self.position) % 4
         self.actions.append({
             'type': 'riichi_complete_message',
             'body': {
-                'scores': [player.score for _, player in self.prange()],
-                'riichis': [player.is_riichi_complete for _, player in self.prange()]
+                'who': who,
+                'score': self.game.players[who].score,
+                'riichi': self.game.players[who].is_riichi_complete
             }
         })
 
@@ -60,6 +65,7 @@ class PlayerMessage:
         self.actions.append({
             'type': 'riichi_bend_message',
             'body': {
+                'who': (self.game.teban - self.position) % 4,
                 'pai': pai,
                 'voice': bool(not self.game.players[self.game.teban].is_riichi_complete)
             }
