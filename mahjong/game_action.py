@@ -46,7 +46,7 @@ class GameAction:
 
             player.riichi_pc = None
             player.riichi_pai = None
-            player.is_riichi_declare = False
+            player.is_riichi_declared = False
             player.is_riichi_completed = False
 
         # 手番設定(最初は1引く)

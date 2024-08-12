@@ -31,7 +31,7 @@ class PlayerJudge:
         if self.is_riichi_completed and dahai != self.game.last_tsumo:
             # print('リーチ後にツモ切りしてない')
             return False
-        if self.is_riichi_declare and not self.is_riichi_completed and self.calc_shanten(remove=[dahai]) > 0:
+        if self.is_riichi_declared and not self.is_riichi_completed and self.calc_shanten(remove=[dahai]) > 0:
             # print('聴牌しないリーチ宣言牌')
             return False
 

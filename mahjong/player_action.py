@@ -59,7 +59,7 @@ class PlayerAction:
         self.game.pc += 10
 
     def riichi_declare(self):
-        self.is_riichi_declare = True
+        self.is_riichi_declared = True
         self.riichi_pc = self.game.pc
 
     def dahai(self, pai):
@@ -75,7 +75,7 @@ class PlayerAction:
         self.game.kyoutaku += 1
 
     def riichi(self, pai):
-        if self.is_riichi_declare and self.riichi_pai not in self.kawa:
+        if self.is_riichi_declared and self.riichi_pai not in self.kawa:
             self.riichi_pai = pai
 
     def ronho(self):

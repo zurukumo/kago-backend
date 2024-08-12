@@ -170,7 +170,7 @@ class GameRoutine:
 
             # ロンじゃなければリーチ成立
             player = self.players[self.teban]
-            if player.is_riichi_declare and not player.is_riichi_completed:
+            if player.is_riichi_declared and not player.is_riichi_completed:
                 player.riichi_complete()
                 for player in self.players:
                     player.riichi_complete_message()
