@@ -44,10 +44,10 @@ class GameAction:
             player.kawa = []
             player.huuro = []
 
-            player.richi_pc = None
-            player.richi_pai = None
-            player.is_richi_declare = False
-            player.is_richi_complete = False
+            player.riichi_pc = None
+            player.riichi_pai = None
+            player.is_riichi_declare = False
+            player.is_riichi_complete = False
 
         # 手番設定(最初は1引く)
         self.teban = (self.kyoku - 1) % 4
@@ -148,20 +148,20 @@ class GameAction:
         if player.can_tsumoho():
             self.tsumoho_decisions[player.position] = True
             self.ankan_decisions[player.position] = None
-            self.richi_decisions[player.position] = False
+            self.riichi_decisions[player.position] = False
 
     def ankan(self, pais, player):
         if player.can_ankan(pais):
             self.tsumoho_decisions[player.position] = False
             self.ankan_decisions[player.position] = pais
-            self.richi_decisions[player.position] = False
+            self.riichi_decisions[player.position] = False
 
-    def richi_declare(self, player):
+    def riichi_declare(self, player):
         for i in player.tehai:
-            if player.can_richi_declare(i):
+            if player.can_riichi_declare(i):
                 self.tsumoho_decisions[player.position] = False
                 self.ankan_decisions[player.position] = None
-                self.richi_decisions[player.position] = True
+                self.riichi_decisions[player.position] = True
                 break
 
     def dahai(self, dahai, player):

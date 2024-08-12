@@ -28,20 +28,20 @@ class PlayerJudge:
         if dahai not in self.tehai:
             # print('手牌に打牌する牌がない')
             return False
-        if self.is_richi_complete and dahai != self.game.last_tsumo:
+        if self.is_riichi_complete and dahai != self.game.last_tsumo:
             # print('リーチ後にツモ切りしてない')
             return False
-        if self.is_richi_declare and not self.is_richi_complete and self.calc_shanten(remove=[dahai]) > 0:
+        if self.is_riichi_declare and not self.is_riichi_complete and self.calc_shanten(remove=[dahai]) > 0:
             # print('聴牌しないリーチ宣言牌')
             return False
 
         return True
 
-    def can_richi_declare(self, dahai):
+    def can_riichi_declare(self, dahai):
         if self.game.teban != self.position:
             # print('手番じゃない')
             return False
-        if self.is_richi_complete:
+        if self.is_riichi_complete:
             # print('リーチしている')
             return False
         if self.game.state not in [Const.TSUMO_STATE, Const.NOTICE1_STATE, Const.DAHAI_STATE]:
@@ -86,7 +86,7 @@ class PlayerJudge:
             if i not in self.tehai:
                 # print('手牌に含まれていない牌がある')
                 return False
-        if self.is_richi_complete:
+        if self.is_riichi_complete:
             shanten1 = self.calc_shanten(remove=[self.game.last_tsumo])
             shanten2 = self.calc_shanten(remove=ankan)
             machi1 = self.get_yuko(remove=[self.game.last_tsumo])
@@ -115,7 +115,7 @@ class PlayerJudge:
         if self.game.teban == self.position:
             # print('捨てた本人')
             return False
-        if self.is_richi_complete:
+        if self.is_riichi_complete:
             # print('リーチしている')
             return False
         if self.game.state != Const.DAHAI_STATE and self.game.state != Const.NOTICE2_STATE:
@@ -147,7 +147,7 @@ class PlayerJudge:
         if (self.game.teban + 1) % 4 != self.position:
             # print('次の手番じゃない')
             return False
-        if self.is_richi_complete:
+        if self.is_riichi_complete:
             # print('リーチしている')
             return False
         if self.game.state != Const.DAHAI_STATE and self.game.state != Const.NOTICE2_STATE:

@@ -47,21 +47,21 @@ class PlayerMessage:
             }
         })
 
-    def richi_complete_message(self):
+    def riichi_complete_message(self):
         self.actions.append({
-            'type': 'richi_complete_message',
+            'type': 'riichi_complete_message',
             'body': {
                 'scores': [player.score for _, player in self.prange()],
-                'richis': [player.is_richi_complete for _, player in self.prange()]
+                'riichis': [player.is_riichi_complete for _, player in self.prange()]
             }
         })
 
-    def richi_bend_message(self, pai):
+    def riichi_bend_message(self, pai):
         self.actions.append({
-            'type': 'richi_bend_message',
+            'type': 'riichi_bend_message',
             'body': {
                 'pai': pai,
-                'voice': bool(not self.game.players[self.game.teban].is_richi_complete)
+                'voice': bool(not self.game.players[self.game.teban].is_riichi_complete)
             }
         })
 
@@ -152,22 +152,22 @@ class PlayerMessage:
         else:
             self.game.tsumoho_decisions[self.position] = False
 
-    def richi_notice_message(self):
+    def riichi_notice_message(self):
         for i in self.tehai:
-            if self.can_richi_declare(i):
+            if self.can_riichi_declare(i):
                 self.actions.append({
-                    'type': 'richi_notice_message',
+                    'type': 'riichi_notice_message',
                 })
                 break
 
-    def richi_declare_notice_message(self):
+    def riichi_declare_notice_message(self):
         action = {
-            'type': 'richi_declare_notice_message',
+            'type': 'riichi_declare_notice_message',
             'body': []
         }
 
         for i in self.tehai:
-            if self.can_richi_declare(i):
+            if self.can_riichi_declare(i):
                 action['body'].append({
                     'pai': i,
                 })

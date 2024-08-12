@@ -42,20 +42,20 @@ class GameRoutine:
             # 選択を格納
             self.tsumoho_decisions = dict()
             self.ankan_decisions = dict()
-            self.richi_decisions = dict()
+            self.riichi_decisions = dict()
 
             # 送信
             for player in self.players:
                 player.tsumo_message(tsumo)
             self.players[self.teban].tsumoho_notice_message()
-            self.players[self.teban].richi_notice_message()
+            self.players[self.teban].riichi_notice_message()
             self.players[self.teban].ankan_notice_message()
 
             # AIの選択を格納
             player = self.players[self.teban]
             if player.type == 'kago' or player.type == 'dqn':
                 self.tsumoho_decisions[player.position] = player.decide_tsumoho()
-                self.richi_decisions[player.position] = player.decide_richi()
+                self.riichi_decisions[player.position] = player.decide_riichi()
                 self.ankan_decisions[player.position] = player.decide_ankan()
 
             self.prev_state = Const.TSUMO_STATE
@@ -64,7 +64,7 @@ class GameRoutine:
 
         # 通知1受信状態
         elif self.state == Const.NOTICE1_STATE:
-            if len(self.tsumoho_decisions) != 1 or len(self.richi_decisions) != 1 or len(self.ankan_decisions) != 1:
+            if len(self.tsumoho_decisions) != 1 or len(self.riichi_decisions) != 1 or len(self.ankan_decisions) != 1:
                 return False
 
             self.dahai_decisions = dict()
@@ -95,11 +95,11 @@ class GameRoutine:
                 return True
 
             # リーチの決定
-            who, tf = list(self.richi_decisions.items())[0]
+            who, tf = list(self.riichi_decisions.items())[0]
             if tf:
-                self.players[who].richi_declare()
+                self.players[who].riichi_declare()
                 for player in self.players:
-                    player.richi_declare_notice_message()
+                    player.riichi_declare_notice_message()
 
                 self.prev_state = Const.NOTICE1_STATE
                 self.state = Const.DAHAI_STATE
@@ -123,7 +123,7 @@ class GameRoutine:
 
             # 打牌
             self.players[who].dahai(pai)
-            self.players[who].richi(pai)
+            self.players[who].riichi(pai)
 
             # 選択を格納
             self.ronho_decisions = dict()
@@ -133,8 +133,8 @@ class GameRoutine:
             # 送信
             for player in self.players:
                 player.dahai_message(pai)
-                if pai in [player.richi_pai for player in self.players]:
-                    player.richi_bend_message(pai)
+                if pai in [player.riichi_pai for player in self.players]:
+                    player.riichi_bend_message(pai)
 
                 player.ronho_notice_message()
                 player.pon_notice_message()
@@ -170,10 +170,10 @@ class GameRoutine:
 
             # ロンじゃなければリーチ成立
             for player in self.players:
-                if player.is_richi_declare and not player.is_richi_complete:
-                    player.richi_complete()
+                if player.is_riichi_declare and not player.is_riichi_complete:
+                    player.riichi_complete()
                     for player in self.players:
-                        player.richi_complete_message()
+                        player.riichi_complete_message()
                     break
 
             # ポン決定
