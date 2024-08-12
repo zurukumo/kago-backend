@@ -188,7 +188,7 @@ class PlayerAction:
         scores = [player.score for _, player in self.prange()]
         richis = [player.is_richi_complete for _, player in self.prange()]
         kazes = ['東南西北'[(i - self.game.kyoku) % 4] for i, _ in self.prange()]
-        rest = len(self.game.yama)
+        n_yama = len(self.game.yama)
 
         return {
             'tehais': tehais,
@@ -199,7 +199,7 @@ class PlayerAction:
             'honba': self.game.honba,
             'kyoutaku': self.game.kyoutaku,
             'dora': dora,
-            'rest': rest,
+            'n_yama': n_yama,
             'scores': scores,
             'richis': richis,
             'kazes': kazes,

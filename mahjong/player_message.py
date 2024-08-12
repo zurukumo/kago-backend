@@ -25,8 +25,8 @@ class PlayerMessage:
         data = {
             'type': 'tsumo_message',
             'body': {
-                    'who': (self.game.teban - self.position) % 4,
-                    'rest': len(self.game.yama)
+                'who': (self.game.teban - self.position) % 4,
+                'n_yama': len(self.game.yama)
             }
         }
 
@@ -117,7 +117,7 @@ class PlayerMessage:
             'body': {
                 'pai': pai,
                 'dummy': self.game.make_dummy(pai),
-                'rest': len(self.game.yama)
+                'n_yama': len(self.game.yama)
             }
         })
 
