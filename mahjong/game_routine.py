@@ -33,7 +33,7 @@ class GameRoutine:
                 self.state = Const.RYUKYOKU_STATE
                 return True
 
-            # ツモ
+            # ツモ(暗槓のときは手番を増やさない)
             if self.prev_state != Const.NOTICE1_STATE:
                 self.teban = (self.teban + 1) % 4
             tsumo = self.yama.pop()
@@ -169,12 +169,11 @@ class GameRoutine:
                 return True
 
             # ロンじゃなければリーチ成立
-            for player in self.players:
-                if player.is_riichi_declare and not player.is_riichi_complete:
-                    player.riichi_complete()
-                    for player in self.players:
-                        player.riichi_complete_message()
-                    break
+            player = self.players[self.teban]
+            if player.is_riichi_declared and not player.is_riichi_completed:
+                player.riichi_complete()
+                for player in self.players:
+                    player.riichi_complete_message()
 
             # ポン決定
             for who, (pais, pai) in self.pon_decisions.items():

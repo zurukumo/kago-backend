@@ -10,14 +10,14 @@ class PlayerMessage:
             'type': 'start_kyoku_message',
             'body': {
                 'game_info': self.game_info(),
-                'players_info': [player.player_info(False) for i, player in self.prange()]
+                'players_info': [player.player_info(i == self.position) for i, player in self.prange()]
             }
         })
 
     def tsumoho_message(self, tsumoho):
         tsumoho = tsumoho.copy()
         tsumoho['scores'] = [tsumoho['scores'][i] for i, _ in self.prange()]
-        tsumoho['scoreMovements'] = [tsumoho['scoreMovements'][i] for i, _ in self.prange()]
+        tsumoho['score_movements'] = [tsumoho['score_movements'][i] for i, _ in self.prange()]
 
         self.actions.append({
             'type': 'tsumoho_message',
@@ -51,13 +51,12 @@ class PlayerMessage:
         })
 
     def riichi_complete_message(self):
-        who = (self.game.teban - self.position) % 4
         self.actions.append({
             'type': 'riichi_complete_message',
             'body': {
-                'who': who,
-                'score': self.game.players[who].score,
-                'riichi': self.game.players[who].is_riichi_complete
+                'who': (self.game.teban - self.position) % 4,
+                'score': self.game.players[self.game.teban].score,
+                'is_riichi_completed': self.game.players[self.game.teban].is_riichi_completed
             }
         })
 
@@ -67,7 +66,7 @@ class PlayerMessage:
             'body': {
                 'who': (self.game.teban - self.position) % 4,
                 'pai': pai,
-                'voice': bool(not self.game.players[self.game.teban].is_riichi_complete)
+                'voice': bool(not self.game.players[self.game.teban].is_riichi_completed)
             }
         })
 
@@ -85,7 +84,7 @@ class PlayerMessage:
     def ronho_message(self, ronho):
         ronho = ronho.copy()
         ronho['scores'] = [ronho['scores'][i] for i, _ in self.prange()]
-        ronho['scoreMovements'] = [ronho['scoreMovements'][i] for i, _ in self.prange()]
+        ronho['score_movements'] = [ronho['score_movements'][i] for i, _ in self.prange()]
 
         self.actions.append({
             'type': 'ronho_message',
@@ -133,7 +132,7 @@ class PlayerMessage:
             'type': 'ryukyoku_message',
             'body': {
                 'scores': [ryukyoku['scores'][i % 4] for i in range(self.position, self.position + 4)],
-                'scoreMovements': [ryukyoku['scoreMovements'][i % 4] for i in range(self.position, self.position + 4)]
+                'score_movements': [ryukyoku['score_movements'][i % 4] for i in range(self.position, self.position + 4)]
             }
         })
 

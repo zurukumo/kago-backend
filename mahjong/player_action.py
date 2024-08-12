@@ -42,7 +42,7 @@ class PlayerAction:
             'doras': doras,
             'uradoras': uradoras,
             'scores': [player.score for player in self.game.players],
-            'scoreMovements': score_movements,
+            'score_movements': score_movements,
         }
 
     def tsumo(self, pai):
@@ -59,7 +59,7 @@ class PlayerAction:
         self.game.pc += 10
 
     def riichi_declare(self):
-        self.is_riichi_declare = True
+        self.is_riichi_declared = True
         self.riichi_pc = self.game.pc
 
     def dahai(self, pai):
@@ -71,11 +71,11 @@ class PlayerAction:
 
     def riichi_complete(self):
         self.score -= 1000
-        self.is_riichi_complete = True
+        self.is_riichi_completed = True
         self.game.kyoutaku += 1
 
     def riichi(self, pai):
-        if self.is_riichi_declare and self.riichi_pai not in self.kawa:
+        if self.is_riichi_declared and self.riichi_pai not in self.kawa:
             self.riichi_pai = pai
 
     def ronho(self):
@@ -90,7 +90,7 @@ class PlayerAction:
         for i in range(5):
             if i < self.game.n_dora:
                 doras.append(self.game.dora[i])
-                if self.is_riichi_complete:
+                if self.is_riichi_completed:
                     uradoras.append(self.game.dora[i + 5])
                 else:
                     uradoras.append(self.game.make_dummy(self.game.dora[i + 5]))
@@ -118,7 +118,7 @@ class PlayerAction:
             'doras': doras,
             'uradoras': uradoras,
             'scores': [player.score for player in self.game.players],
-            'scoreMovements': score_movements,
+            'score_movements': score_movements,
         }
 
     def pon(self, pais, pai):
@@ -161,20 +161,16 @@ class PlayerAction:
     def player_info(self, is_myself: bool):
         tehai = self.tehai if is_myself else self.game.make_dummies(self.tehai)
         kawa = self.kawa if is_myself else self.game.make_dummies(self.kawa)
-        huuro = self.huuro
-        riichi_pai = self.riichi_pai
-        score = self.score
-        kaze = '東南西北'[(self.position - self.game.kyoku) % 4]
-        riichi = self.is_riichi_complete
+        zikaze = '東南西北'[(self.position - self.game.kyoku) % 4]
 
         return {
             'tehai': tehai,
             'kawa': kawa,
-            'huuro': huuro,
-            'riichi_pai': riichi_pai,
-            'score': score,
-            'kaze': kaze,
-            'riichi': riichi
+            'huuro': self.huuro,
+            'riichi_pai': self.riichi_pai,
+            'score': self.score,
+            'zikaze': zikaze,
+            'is_riichi_completed': self.is_riichi_completed
         }
 
     def game_info(self):

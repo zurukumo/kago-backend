@@ -447,10 +447,10 @@ class Agari:
         if len(huuro_types) - huuro_types.count('ankan') == 0 and self.game.teban == self.player.position:
             jokyo_yaku[Agari.YAKU.index('門前清自摸和')] += 1
         # 立直
-        if self.player.is_riichi_complete and not 0 <= self.player.riichi_pc <= 3:
+        if self.player.is_riichi_completed and not 0 <= self.player.riichi_pc <= 3:
             jokyo_yaku[Agari.YAKU.index('立直')] += 1
         # 一発
-        if self.player.is_riichi_complete and self.game.pc - self.player.riichi_pc <= 4:
+        if self.player.is_riichi_completed and self.game.pc - self.player.riichi_pc <= 4:
             jokyo_yaku[Agari.YAKU.index('一発')] += 1
         # TODO 槍槓
         # TODO 嶺上開花
@@ -461,7 +461,7 @@ class Agari:
         if self.game.teban != self.player.position and len(self.game.yama) == 0:
             jokyo_yaku[Agari.YAKU.index('河底撈魚')] += 1
         # 両立直
-        if self.player.is_riichi_complete and 0 <= self.player.riichi_pc <= 3:
+        if self.player.is_riichi_completed and 0 <= self.player.riichi_pc <= 3:
             jokyo_yaku[Agari.YAKU.index('両立直')] += 2
         # 天和
         if self.game.pc == 0 and self.game.teban == self.player.position:
@@ -472,7 +472,7 @@ class Agari:
         # ドラ/裏ドラ
         for i in range(self.game.n_dora):
             jokyo_yaku[Agari.YAKU.index('ドラ')] += zenpai[self.get_dora(self.game.dora[i])]
-            if self.player.is_riichi_complete:
+            if self.player.is_riichi_completed:
                 jokyo_yaku[Agari.YAKU.index('裏ドラ')] += zenpai[self.get_dora(self.game.dora[i + 5])]
         # 赤ドラ
         for pai in [16, 52, 88]:
