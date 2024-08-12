@@ -2,7 +2,7 @@ import os
 from itertools import product
 
 import numpy as np
-from tensorflow.keras import models
+from keras import models
 
 from .player import Player
 
