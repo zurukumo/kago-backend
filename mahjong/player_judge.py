@@ -1,67 +1,79 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from .agari import Agari
 from .const import Const
+
+if TYPE_CHECKING:
+    from .game import Game
+    from .player import Player
 
 
 # TODO フリテンツモしない
 class PlayerJudge:
+    def __init__(self, game: Game, player: Player):
+        self.game = game
+        self.player = player
+
     def can_tsumoho(self):
-        if self.game.teban != self.position:
+        if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
-        if self.calc_shanten() >= 0:
+        if self.player.calc_shanten() >= 0:
             # print('和了ってない')
             return False
         # TODO パオ
-        if Agari(self, self.game).score_movements == [0, 0, 0, 0]:
+        if Agari(self.player, self.game).score_movements == [0, 0, 0, 0]:
             # print('役無し')
             return False
 
         return True
 
     def can_dahai(self, dahai):
-        if self.game.teban != self.position:
+        if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
         if self.game.state not in [Const.NOTICE1_STATE, Const.DAHAI_STATE]:
             # print('ステート異常')
             return False
-        if dahai not in self.tehai:
+        if dahai not in self.player.tehai:
             # print('手牌に打牌する牌がない')
             return False
-        if self.is_riichi_completed and dahai != self.game.last_tsumo:
+        if self.player.is_riichi_completed and dahai != self.game.last_tsumo:
             # print('リーチ後にツモ切りしてない')
             return False
-        if self.is_riichi_declared and not self.is_riichi_completed and self.calc_shanten(remove=[dahai]) > 0:
+        if self.player.is_riichi_declared and not self.player.is_riichi_completed and self.player.calc_shanten(remove=[dahai]) > 0:
             # print('聴牌しないリーチ宣言牌')
             return False
 
         return True
 
     def can_riichi_declare(self, dahai):
-        if self.game.teban != self.position:
+        if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
-        if self.is_riichi_completed:
+        if self.player.is_riichi_completed:
             # print('リーチしている')
             return False
         if self.game.state not in [Const.TSUMO_STATE, Const.NOTICE1_STATE, Const.DAHAI_STATE]:
             # print('ステート異常')
             return False
-        huuro_types = [huuro['type'] for huuro in self.huuro]
+        huuro_types = [huuro['type'] for huuro in self.player.huuro]
         if len(huuro_types) - huuro_types.count('ankan') != 0:
             # print('門前じゃない')
             return False
-        if self.score < 1000:
+        if self.player.score < 1000:
             # print('1000点ない')
             return False
-        if self.calc_shanten(remove=[dahai]) > 0:
+        if self.player.calc_shanten(remove=[dahai]) > 0:
             # print('テンパってない')
             return False
 
         return True
 
     def can_ankan(self, ankan):
-        if self.game.teban != self.position:
+        if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
         if self.game.state != Const.TSUMO_STATE and self.game.state != Const.NOTICE1_STATE:
@@ -83,12 +95,12 @@ class PlayerJudge:
             # print('牌を4で割った商が全て同じじゃない')
             return False
         for i in ankan:
-            if i not in self.tehai:
+            if i not in self.player.tehai:
                 # print('手牌に含まれていない牌がある')
                 return False
-        if self.is_riichi_completed:
-            shanten1 = self.calc_shanten(remove=[self.game.last_tsumo])
-            shanten2 = self.calc_shanten(remove=ankan)
+        if self.player.is_riichi_completed:
+            shanten1 = self.player.calc_shanten(remove=[self.game.last_tsumo])
+            shanten2 = self.player.calc_shanten(remove=ankan)
             machi1 = self.get_yuko(remove=[self.game.last_tsumo])
             machi2 = self.get_yuko(remove=ankan)
             if shanten1 != shanten2 or machi1 != machi2:
@@ -98,24 +110,24 @@ class PlayerJudge:
         return True
 
     def can_ronho(self):
-        if self.game.teban == self.position:
+        if self.game.teban == self.player.position:
             # print('捨てた本人')
             return False
-        if self.calc_shanten(add=[self.game.last_dahai]) >= 0:
+        if self.player.calc_shanten(add=[self.game.last_dahai]) >= 0:
             # print('和了ってない')
             return False
         # TODO パオ
-        if Agari(self, self.game).score_movements == [0, 0, 0, 0]:
+        if Agari(self.player, self.game).score_movements == [0, 0, 0, 0]:
             # print('役無し')
             return False
 
         return True
 
     def can_pon(self, pais, pai):
-        if self.game.teban == self.position:
+        if self.game.teban == self.player.position:
             # print('捨てた本人')
             return False
-        if self.is_riichi_completed:
+        if self.player.is_riichi_completed:
             # print('リーチしている')
             return False
         if self.game.state != Const.DAHAI_STATE and self.game.state != Const.NOTICE2_STATE:
@@ -131,11 +143,11 @@ class PlayerJudge:
             # print('牌の数が3つじゃない')
             return False
         for i in range(3):
-            if pais[i] != pai and pais[i] not in self.tehai:
+            if pais[i] != pai and pais[i] not in self.player.tehai:
                 # print('手牌に含まれていない牌がある')
                 return False
         if not pais[0] // 4 == pais[1] // 4 == pais[2] // 4:
-            # print('同じじゃない', pais, pai, self.tehai)
+            # print('同じじゃない', pais, pai, self.player.tehai)
             return False
         if len(set(pais)) != 3:
             # print('牌番号に同じものがある')
@@ -144,10 +156,10 @@ class PlayerJudge:
         return True
 
     def can_chi(self, pais, pai):
-        if (self.game.teban + 1) % 4 != self.position:
+        if (self.game.teban + 1) % 4 != self.player.position:
             # print('次の手番じゃない')
             return False
-        if self.is_riichi_completed:
+        if self.player.is_riichi_completed:
             # print('リーチしている')
             return False
         if self.game.state != Const.DAHAI_STATE and self.game.state != Const.NOTICE2_STATE:
@@ -163,7 +175,7 @@ class PlayerJudge:
             # print('牌の数が3つじゃない')
             return False
         for i in range(3):
-            if pais[i] != pai and pais[i] not in self.tehai:
+            if pais[i] != pai and pais[i] not in self.player.tehai:
                 # print('手牌に含まれていない牌がある')
                 return False
         pais.sort()
