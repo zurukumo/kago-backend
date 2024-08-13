@@ -1,4 +1,11 @@
+from __future__ import annotations
+
 from itertools import combinations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .game import Game
+    from .player import Player
 
 
 class Agari:
@@ -17,7 +24,7 @@ class Agari:
             '九蓮宝燈', '純正九蓮宝燈', '国士無双', '国士無双13面', '大四喜',
             '小四喜', '四槓子', 'ドラ', '裏ドラ', '赤ドラ']
 
-    def __init__(self, player, game):
+    def __init__(self, player: Player, game: Game):
         self.player = player
         self.game = game
 
@@ -470,7 +477,7 @@ class Agari:
         if 1 <= self.game.pc <= 3 and self.game.teban == self.player.position:
             jokyo_yaku[Agari.YAKU.index('地和')] += 13
         # ドラ/裏ドラ
-        for i in range(self.game.n_dora):
+        for i in range(self.game.n_opened_dora):
             jokyo_yaku[Agari.YAKU.index('ドラ')] += zenpai[self.get_dora(self.game.dora[i])]
             if self.player.is_riichi_completed:
                 jokyo_yaku[Agari.YAKU.index('裏ドラ')] += zenpai[self.get_dora(self.game.dora[i + 5])]

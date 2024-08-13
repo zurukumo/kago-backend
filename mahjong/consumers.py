@@ -25,51 +25,51 @@ class MahjongConsumer(AsyncWebsocketConsumer):
 
         if data_type == 'start_game':
             self.game = Game()
-            self.game.start_game(data['mode'])
+            self.game.action.start_game(data['mode'])
             self.player = self.game.find_player(0)
             await self.next()
 
         if data_type == 'tsumoho':
-            self.game.tsumoho(self.player)
+            self.game.action.tsumoho(self.player)
             await self.next()
 
         if data_type == 'dahai':
-            self.game.dahai(data['body']['pai'], self.player)
+            self.game.action.dahai(data['body']['pai'], self.player)
             await self.next()
 
         if data_type == 'riichi_declare':
-            self.game.riichi_declare(self.player)
+            self.game.action.riichi_declare(self.player)
             await self.next()
 
         if data_type == 'ankan':
-            self.game.ankan(data['body']['pais'], self.player)
+            self.game.action.ankan(data['body']['pais'], self.player)
             await self.next()
 
         if data_type == 'ronho':
-            self.game.ronho(self.player)
+            self.game.action.ronho(self.player)
             await self.next()
 
         if data_type == 'pon':
-            self.game.pon(data['body']['pais'], data['body']['pai'], self.player)
+            self.game.action.pon(data['body']['pais'], data['body']['pai'], self.player)
             await self.next()
 
         if data_type == 'chi':
-            self.game.chi(data['body']['pais'], data['body']['pai'], self.player)
+            self.game.action.chi(data['body']['pais'], data['body']['pai'], self.player)
             await self.next()
 
         if data_type == 'next_kyoku':
-            self.game.next_kyoku()
+            self.game.action.next_kyoku()
             await self.next()
 
         if data_type == 'cancel':
-            self.player.cancel()
+            self.player.action.cancel()
             await self.next()
 
         if data_type == 'next':
             await self.next()
 
     async def next(self):
-        while self.game.next():
+        while self.game.routine.next():
             if len(self.player.actions) != 0:
                 await self.send(self.player.actions)
                 break

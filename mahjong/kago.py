@@ -18,7 +18,6 @@ class Kago(Player):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.type = 'kago'
 
     def make_input(self):
         row = []
@@ -54,7 +53,7 @@ class Kago(Player):
 
         # ドラ
         dora = [0] * 34
-        for pai in self.game.dora[:self.game.n_dora]:
+        for pai in self.game.dora[:self.game.n_opened_dora]:
             dora[pai // 4] += 1
         for i in range(1, 4 + 1):
             row += [1 if dora[j] >= i else 0 for j in range(34)]
@@ -133,7 +132,7 @@ class Kago(Player):
             print(detail)
 
     def decide_tsumoho(self):
-        if self.can_tsumoho():
+        if self.judge.can_tsumoho():
             return True
         else:
             return False
@@ -149,14 +148,14 @@ class Kago(Player):
                     mk, mv = None, y[i]
                 if i == 1:
                     for p in range(34):
-                        if self.can_ankan([p * 4, p * 4 + 1, p * 4 + 2, p * 4 + 3]):
+                        if self.judge.can_ankan([p * 4, p * 4 + 1, p * 4 + 2, p * 4 + 3]):
                             mk, mv = [p * 4, p * 4 + 1, p * 4 + 2, p * 4 + 3], y[i]
                             break
 
         return mk
 
     def decide_riichi(self):
-        if not any([self.can_riichi_declare(dahai) for dahai in self.tehai]):
+        if not any([self.judge.can_riichi_declare(dahai) for dahai in self.tehai]):
             return False
 
         x = self.make_input()
@@ -173,14 +172,14 @@ class Kago(Player):
             if y[i] < mv:
                 continue
             for p in range(i * 4 + 3, i * 4 - 1, -1):
-                if p in self.tehai and self.can_dahai(p):
+                if p in self.tehai and self.judge.can_dahai(p):
                     mk, mv = p, y[i]
                     break
 
         return mk
 
     def decide_ronho(self):
-        if self.can_ronho():
+        if self.judge.can_ronho():
             return True
         else:
             return False
@@ -200,7 +199,7 @@ class Kago(Player):
                     for a, b in product(range(p, p + 4), range(p, p + 4)):
                         if a == b or b == last_dahai or last_dahai == a:
                             continue
-                        if self.can_pon([last_dahai, a, b], last_dahai):
+                        if self.judge.can_pon([last_dahai, a, b], last_dahai):
                             mk, mv = [last_dahai, a, b], y[i]
                             break
 
@@ -220,21 +219,21 @@ class Kago(Player):
                     p1 = (last_dahai // 4 + 1) * 4
                     p2 = (last_dahai // 4 + 2) * 4
                     for a, b in product(range(p1, p1 + 4), range(p2, p2 + 4)):
-                        if self.can_chi([last_dahai, a, b], last_dahai):
+                        if self.judge.can_chi([last_dahai, a, b], last_dahai):
                             mk, mv = [last_dahai, a, b], y[i]
                             break
                 if i == 2:
                     p1 = (last_dahai // 4 - 1) * 4
                     p2 = (last_dahai // 4 + 1) * 4
                     for a, b in product(range(p1, p1 + 4), range(p2, p2 + 4)):
-                        if self.can_chi([last_dahai, a, b], last_dahai):
+                        if self.judge.can_chi([last_dahai, a, b], last_dahai):
                             mk, mv = [last_dahai, a, b], y[i]
                             break
                 if i == 3:
                     p1 = (last_dahai // 4 - 2) * 4
                     p2 = (last_dahai // 4 - 1) * 4
                     for a, b in product(range(p1, p1 + 4), range(p2, p2 + 4)):
-                        if self.can_chi([last_dahai, a, b], last_dahai):
+                        if self.judge.can_chi([last_dahai, a, b], last_dahai):
                             mk, mv = [last_dahai, a, b], y[i]
                             break
 
