@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from time import sleep
 from typing import TYPE_CHECKING
 
 from .const import Const
@@ -15,9 +14,7 @@ class GameRoutine:
     def __init__(self, game: Game):
         self.game = game
 
-    def next(self):
-        # sleep(10)
-
+    def next(self) -> bool:
         # 行動のリセット
         for player in self.game.players:
             player.action.reset_actions()
@@ -85,7 +82,7 @@ class GameRoutine:
             # ツモの決定
             who, tf = list(self.game.tsumoho_decisions.items())[0]
             if tf:
-                tsumoho = self.game.players[int(who)].action.tsumoho()
+                tsumoho = self.game.players[who].action.tsumoho()
                 for player in self.game.players:
                     player.message.tsumoho_message(tsumoho)
 
@@ -96,8 +93,8 @@ class GameRoutine:
             # 暗槓の決定
             who, pais = list(self.game.ankan_decisions.items())[0]
             if pais is not None:
-                self.game.players[int(who)].action.ankan(pais)
-                self.game.players[int(who)].action.open_dora()
+                self.game.players[who].action.ankan(pais)
+                self.game.players[who].action.open_dora()
 
                 for player in self.game.players:
                     player.message.ankan_message(pais)
@@ -110,7 +107,7 @@ class GameRoutine:
             # リーチの決定
             who, tf = list(self.game.riichi_decisions.items())[0]
             if tf:
-                self.game.players[int(who)].action.riichi_declare()
+                self.game.players[who].action.riichi_declare()
                 for player in self.game.players:
                     player.message.riichi_declare_notice_message()
 
@@ -135,8 +132,8 @@ class GameRoutine:
             who, pai = list(self.game.dahai_decisions.items())[0]
 
             # 打牌
-            self.game.players[int(who)].action.dahai(pai)
-            self.game.players[int(who)].action.riichi(pai)
+            self.game.players[who].action.dahai(pai)
+            self.game.players[who].action.riichi(pai)
 
             # 選択を格納
             self.game.ronho_decisions = dict()
@@ -157,8 +154,8 @@ class GameRoutine:
             for player in self.game.players:
                 if isinstance(player, Kago):
                     self.game.ronho_decisions[player.position] = player.decide_ronho()
-                    self.game.pon_decisions[player.position] = [player.decide_pon(), self.game.last_dahai]
-                    self.game.chi_decisions[player.position] = [player.decide_chi(), self.game.last_dahai]
+                    self.game.pon_decisions[player.position] = (player.decide_pon(), self.game.last_dahai)
+                    self.game.chi_decisions[player.position] = (player.decide_chi(), self.game.last_dahai)
 
             self.prev_state = Const.DAHAI_STATE
             self.game.state = Const.NOTICE2_STATE
@@ -173,7 +170,7 @@ class GameRoutine:
             for who, tf in self.game.ronho_decisions.items():
                 if not tf:
                     continue
-                ronho = self.game.players[int(who)].action.ronho()
+                ronho = self.game.players[who].action.ronho()
                 for player in self.game.players:
                     player.message.ronho_message(ronho)
 
@@ -182,18 +179,18 @@ class GameRoutine:
                 return True
 
             # ロンじゃなければリーチ成立
-            player = self.game.players[self.game.teban]
-            if player.is_riichi_declared and not player.is_riichi_completed:
-                player.action.riichi_complete()
+            teban_player = self.game.players[self.game.teban]
+            if teban_player.is_riichi_declared and not teban_player.is_riichi_completed:
+                teban_player.action.riichi_complete()
                 for player in self.game.players:
                     player.message.riichi_complete_message()
 
             # ポン決定
-            for who, (pais, pai) in self.game.pon_decisions.items():
-                if pais is not None:
-                    self.game.players[int(who)].action.pon(pais, pai)
+            for pwho, (ppais, ppai) in self.game.pon_decisions.items():
+                if ppai is not None and ppais is not None:
+                    self.game.players[pwho].action.pon(ppais, ppai)
                     for player in self.game.players:
-                        player.message.pon_message(pais, pai)
+                        player.message.pon_message(ppais, ppai)
 
                     self.game.dahai_decisions = dict()
                     self.prev_state = Const.NOTICE2_STATE
@@ -201,11 +198,11 @@ class GameRoutine:
                     return True
 
             # チー決定
-            for who, (pais, pai) in self.game.chi_decisions.items():
-                if pais is not None:
-                    self.game.players[int(who)].action.chi(pais, pai)
+            for cwho, (cpais, cpai) in self.game.chi_decisions.items():
+                if cpai is not None and cpais is not None:
+                    self.game.players[cwho].action.chi(cpais, cpai)
                     for player in self.game.players:
-                        player.message.chi_message(pais, pai)
+                        player.message.chi_message(cpais, cpai)
 
                     self.game.dahai_decisions = dict()
                     self.prev_state = Const.NOTICE2_STATE
@@ -235,3 +232,5 @@ class GameRoutine:
         # 終局状態
         elif self.game.state == Const.SYUKYOKU_STATE:
             pass
+
+        raise ValueError(f'Invalid state: {self.game.state}')

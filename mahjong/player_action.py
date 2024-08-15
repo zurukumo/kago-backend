@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List
 
 from .agari import Agari
 
@@ -11,15 +11,18 @@ if TYPE_CHECKING:
 
 # TODO decisionsはGameじゃなくてPlayerに持たせたほうが良い
 class PlayerAction:
+    game: Game
+    player: Player
+
     def __init__(self, game: Game, player: Player):
         self.game = game
         self.player = player
 
-    def start_game(self, position: int):
+    def start_game(self, position: int) -> None:
         self.player.position = position
         self.player.score = 25000
 
-    def start_kyoku(self):
+    def start_kyoku(self) -> None:
         self.player.tehai = []
         self.player.kawa = []
         self.player.huuro = []
@@ -27,10 +30,10 @@ class PlayerAction:
         self.player.is_riichi_declared = False
         self.player.is_riichi_completed = False
 
-    def open_dora(self):
+    def open_dora(self) -> None:
         self.game.n_opened_dora += 1
 
-    def tsumoho(self):
+    def tsumoho(self) -> Dict[str, Any]:
         agari = Agari(self.player, self.game)
         yakus = []
         for i in range(len(Agari.YAKU)):
@@ -69,12 +72,12 @@ class PlayerAction:
             'score_movements': score_movements,
         }
 
-    def tsumo(self, pai):
+    def tsumo(self, pai: int) -> None:
         self.player.tehai.append(pai)
         self.player.tehai.sort()
         self.game.last_tsumo = pai
 
-    def ankan(self, pais):
+    def ankan(self, pais: List[int]) -> None:
         for i in pais:
             self.player.tehai.pop(self.player.tehai.index(i))
         self.player.huuro.append({
@@ -86,27 +89,27 @@ class PlayerAction:
         self.game.n_kan += 1
         self.game.pc += 10
 
-    def riichi_declare(self):
+    def riichi_declare(self) -> None:
         self.player.is_riichi_declared = True
         self.player.riichi_pc = self.game.pc
 
-    def dahai(self, pai):
+    def dahai(self, pai: int) -> None:
         self.player.tehai.pop(self.player.tehai.index(pai))
         self.player.kawa.append(pai)
         self.game.last_dahai = pai
         self.game.last_teban = self.game.teban
         self.game.pc += 1
 
-    def riichi_complete(self):
+    def riichi_complete(self) -> None:
         self.player.score -= 1000
         self.player.is_riichi_completed = True
         self.game.kyoutaku += 1
 
-    def riichi(self, pai):
+    def riichi(self, pai: int) -> None:
         if self.player.is_riichi_declared and self.player.riichi_pai not in self.player.kawa:
             self.player.riichi_pai = pai
 
-    def ronho(self):
+    def ronho(self) -> Dict[str, Any]:
         agari = Agari(self.player, self.game)
         yakus = []
         for i in range(len(Agari.YAKU)):
@@ -149,7 +152,10 @@ class PlayerAction:
             'score_movements': score_movements,
         }
 
-    def pon(self, pais, pai):
+    def pon(self, pais: List[int], pai: int) -> None:
+        if self.game.last_teban is None:
+            raise Exception('last_teban is None')
+
         for i in pais:
             if i != pai:
                 self.player.tehai.pop(self.player.tehai.index(i))
@@ -166,7 +172,10 @@ class PlayerAction:
         self.game.teban = self.player.position
         self.game.pc += 10
 
-    def chi(self, pais, pai):
+    def chi(self, pais: List[int], pai: int) -> None:
+        if self.game.last_teban is None:
+            raise Exception('last_teban is None')
+
         for i in pais:
             if i != pai:
                 self.player.tehai.pop(self.player.tehai.index(i))
@@ -183,20 +192,20 @@ class PlayerAction:
         self.game.teban = self.player.position
         self.game.pc += 10
 
-    def cancel(self):
+    def cancel(self) -> None:
         if self.game.teban == self.player.position:
             self.game.ankan_decisions[self.player.position] = None
             self.game.riichi_decisions[self.player.position] = False
 
         self.game.ronho_decisions[self.player.position] = False
-        self.game.minkan_decisions[self.player.position] = [None, None]
-        self.game.pon_decisions[self.player.position] = [None, None]
-        self.game.chi_decisions[self.player.position] = [None, None]
+        self.game.minkan_decisions[self.player.position] = (None, None)
+        self.game.pon_decisions[self.player.position] = (None, None)
+        self.game.chi_decisions[self.player.position] = (None, None)
 
-    def reset_actions(self):
+    def reset_actions(self) -> None:
         self.player.actions = []
 
-    def player_info(self, is_myself: bool):
+    def player_info(self, is_myself: bool) -> Dict[str, Any]:
         tehai = self.player.tehai if is_myself else self.game.make_dummies(self.player.tehai)
         kawa = self.player.kawa if is_myself else self.game.make_dummies(self.player.kawa)
         zikaze = '東南西北'[(self.player.position - self.game.kyoku) % 4]

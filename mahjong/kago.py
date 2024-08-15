@@ -1,7 +1,9 @@
 import os
 from itertools import product
+from typing import List, Optional
 
 import numpy as np
+import numpy.typing as npt
 from keras import models
 
 from .player import Player
@@ -16,10 +18,7 @@ class Kago(Player):
     PON_NETWORK = models.load_model(os.path.join(module_dir, 'networks/pon.h5'))
     CHI_NETWORK = models.load_model(os.path.join(module_dir, 'networks/chi.h5'))
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def make_input(self):
+    def make_input(self) -> npt.NDArray[np.float32]:
         row = []
 
         # 手牌
@@ -85,10 +84,10 @@ class Kago(Player):
         for k, v in enumerate(row):
             x[0][k % 34][k // 34] = v
 
-        x = np.array([x], np.float32)
-        return x
+        np_x = np.array([x], np.float32)
+        return np_x
 
-    def debug(self, x):
+    def debug(self, x: npt.NDArray[np.float32]) -> None:
         jp = ['1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m',
               '1p', '2p', '3p', '4p', '5p', '6p', '7p', '8p', '9p',
               '1s', '2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s',
@@ -131,13 +130,13 @@ class Kago(Player):
                         detail += jp[j]
             print(detail)
 
-    def decide_tsumoho(self):
+    def decide_tsumoho(self) -> bool:
         if self.judge.can_tsumoho():
             return True
         else:
             return False
 
-    def decide_ankan(self):
+    def decide_ankan(self) -> Optional[List[int]]:
         x = self.make_input()
         y = Kago.ANKAN_NETWORK.predict(x, verbose=0)[0]
         mk, mv = None, -float('inf')
@@ -154,7 +153,7 @@ class Kago(Player):
 
         return mk
 
-    def decide_riichi(self):
+    def decide_riichi(self) -> bool:
         if not any([self.judge.can_riichi_declare(dahai) for dahai in self.tehai]):
             return False
 
@@ -163,7 +162,7 @@ class Kago(Player):
 
         return bool(y[1] > y[0])
 
-    def decide_dahai(self):
+    def decide_dahai(self) -> int:
         x = self.make_input()
         y = Kago.DAHAI_NETWORK.predict(x, verbose=0)[0]
         mk, mv = -1, -float('inf')
@@ -178,18 +177,21 @@ class Kago(Player):
 
         return mk
 
-    def decide_ronho(self):
+    def decide_ronho(self) -> bool:
         if self.judge.can_ronho():
             return True
         else:
             return False
 
-    def decide_pon(self):
+    def decide_pon(self) -> Optional[List[int]]:
         x = self.make_input()
         y = Kago.PON_NETWORK.predict(x, verbose=0)[0]
         mk, mv = None, -float('inf')
 
         last_dahai = self.game.last_dahai
+        if last_dahai is None:
+            raise ValueError('self.game.last_dahai is None')
+
         for i in range(2):
             if y[i] > mv:
                 if i == 0:
@@ -205,12 +207,15 @@ class Kago(Player):
 
         return mk
 
-    def decide_chi(self):
+    def decide_chi(self) -> Optional[List[int]]:
         x = self.make_input()
         y = Kago.CHI_NETWORK.predict(x, verbose=0)[0]
         mk, mv = None, -float('inf')
 
         last_dahai = self.game.last_dahai
+        if last_dahai is None:
+            raise ValueError('self.game.last_dahai is None')
+
         for i in range(4):
             if y[i] > mv:
                 if i == 0:

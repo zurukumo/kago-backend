@@ -15,5 +15,5 @@ class Const:
     RYUKYOKU_STATE = 'RYUKYOKU'
     SYUKYOKU_STATE = 'SYUKYOKU'
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import combinations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List
 
 if TYPE_CHECKING:
     from .game import Game
@@ -9,11 +9,14 @@ if TYPE_CHECKING:
 
 
 class PlayerMessage:
+    game: Game
+    player: Player
+
     def __init__(self, game: Game, player: Player):
         self.game = game
         self.player = player
 
-    def start_kyoku_message(self):
+    def start_kyoku_message(self) -> None:
         self.player.actions.append({
             'type': 'start_kyoku_message',
             'body': {
@@ -22,7 +25,7 @@ class PlayerMessage:
             }
         })
 
-    def tsumoho_message(self, tsumoho):
+    def tsumoho_message(self, tsumoho: Dict[str, Any]) -> None:
         tsumoho = tsumoho.copy()
         tsumoho['scores'] = [tsumoho['scores'][i] for i, _ in self.player.prange()]
         tsumoho['score_movements'] = [tsumoho['score_movements'][i] for i, _ in self.player.prange()]
@@ -32,23 +35,23 @@ class PlayerMessage:
             'body': tsumoho
         })
 
-    def tsumo_message(self, pai):
-        data = {
-            'type': 'tsumo_message',
-            'body': {
-                'who': (self.game.teban - self.player.position) % 4,
-                'n_yama': len(self.game.yama)
-            }
+    def tsumo_message(self, pai: int) -> None:
+        body = {
+            'who': (self.game.teban - self.player.position) % 4,
+            'n_yama': len(self.game.yama),
         }
 
         if self.game.teban == self.player.position:
-            data['body']['pai'] = pai
+            body['pai'] = pai
         else:
-            data['body']['dummy'] = self.game.make_dummy(pai)
+            body['dummy'] = self.game.make_dummy(pai)
 
-        self.player.actions.append(data)
+        self.player.actions.append({
+            'type': 'tsumo_message',
+            'body': body
+        })
 
-    def dahai_message(self, pai):
+    def dahai_message(self, pai: int) -> None:
         self.player.actions.append({
             'type': 'dahai_message',
             'body': {
@@ -58,7 +61,7 @@ class PlayerMessage:
             }
         })
 
-    def riichi_complete_message(self):
+    def riichi_complete_message(self) -> None:
         self.player.actions.append({
             'type': 'riichi_complete_message',
             'body': {
@@ -68,7 +71,7 @@ class PlayerMessage:
             }
         })
 
-    def riichi_bend_message(self, pai):
+    def riichi_bend_message(self, pai: int) -> None:
         self.player.actions.append({
             'type': 'riichi_bend_message',
             'body': {
@@ -78,7 +81,7 @@ class PlayerMessage:
             }
         })
 
-    def ankan_message(self, pais):
+    def ankan_message(self, pais: List[int]) -> None:
         self.player.actions.append({
             'type': 'ankan_message',
             'body': {
@@ -89,7 +92,7 @@ class PlayerMessage:
             }
         })
 
-    def ronho_message(self, ronho):
+    def ronho_message(self, ronho: Dict[str, Any]) -> None:
         ronho = ronho.copy()
         ronho['scores'] = [ronho['scores'][i] for i, _ in self.player.prange()]
         ronho['score_movements'] = [ronho['score_movements'][i] for i, _ in self.player.prange()]
@@ -99,7 +102,10 @@ class PlayerMessage:
             'body': ronho
         })
 
-    def pon_message(self, pais, pai):
+    def pon_message(self, pais: List[int], pai: int) -> None:
+        if self.game.last_teban is None:
+            raise ValueError('last_teban is None')
+
         self.player.actions.append({
             'type': 'pon_message',
             'body': {
@@ -111,7 +117,10 @@ class PlayerMessage:
             }
         })
 
-    def chi_message(self, pais, pai):
+    def chi_message(self, pais: List[int], pai: int) -> None:
+        if self.game.last_teban is None:
+            raise ValueError('last_teban is None')
+
         self.player.actions.append({
             'type': 'chi_message',
             'body': {
@@ -123,7 +132,7 @@ class PlayerMessage:
             }
         })
 
-    def open_dora_message(self):
+    def open_dora_message(self) -> None:
         pai = self.game.dora[self.game.n_opened_dora - 1]
         self.player.actions.append({
             'type': 'open_dora_message',
@@ -135,7 +144,7 @@ class PlayerMessage:
         })
 
     # TODO テンパイではリーチ棒情報が出ない
-    def ryukyoku_message(self, ryukyoku):
+    def ryukyoku_message(self, ryukyoku: Dict[str, Any]) -> None:
         self.player.actions.append({
             'type': 'ryukyoku_message',
             'body': {
@@ -145,7 +154,7 @@ class PlayerMessage:
         })
 
     # TODO トップの人にリーチ棒を
-    def syukyoku_message(self):
+    def syukyoku_message(self) -> None:
         scores = [player.score for player in self.game.players]
         order_scores = sorted(scores, reverse=True)
         ranks = [order_scores.index(scores[i]) + 1 for i in range(4)]
@@ -159,13 +168,13 @@ class PlayerMessage:
         })
 
     # 通知1(ツモ和/リーチ/暗槓/加槓)
-    def tsumoho_notice_message(self):
+    def tsumoho_notice_message(self) -> None:
         if self.player.judge.can_tsumoho():
             self.player.actions.append({'type': 'tsumoho_notice_message'})
         else:
             self.game.tsumoho_decisions[self.player.position] = False
 
-    def riichi_notice_message(self):
+    def riichi_notice_message(self) -> None:
         for i in self.player.tehai:
             if self.player.judge.can_riichi_declare(i):
                 self.player.actions.append({
@@ -173,51 +182,53 @@ class PlayerMessage:
                 })
                 break
 
-    def riichi_declare_notice_message(self):
-        action = {
-            'type': 'riichi_declare_notice_message',
-            'body': []
-        }
+    def riichi_declare_notice_message(self) -> None:
+        body = []
 
         for i in self.player.tehai:
             if self.player.judge.can_riichi_declare(i):
-                action['body'].append({
+                body.append({
                     'pai': i,
                 })
 
-        if len(action['body']) != 0:
-            self.player.actions.append(action)
+        if len(body) != 0:
+            self.player.actions.append({
+                'type': 'riichi_declare_notice_message',
+                'body': body
+            })
 
-    def ankan_notice_message(self):
-        action = {
-            'type': 'ankan_notice_message',
-            'body': []
-        }
+    def ankan_notice_message(self) -> None:
+        body = []
 
         for i in range(34):
             if self.player.judge.can_ankan([i * 4 + j for j in range(4)]):
-                action['body'].append({
+                body.append({
                     'pais': [i * 4 + j for j in range(4)],
                     'dummies': self.game.make_dummies([i * 4 + j for j in range(4)])
                 })
 
-        if len(action['body']) == 0:
+        if len(body) == 0:
             self.game.ankan_decisions[self.player.position] = None
         else:
-            self.player.actions.append(action)
+            self.player.actions.append({
+                'type': 'ankan_notice_message',
+                'body': body
+            })
 
     # 通知2(ロン和/明槓/ポン/チー)
-    def ronho_notice_message(self):
+    def ronho_notice_message(self) -> None:
         if self.player.judge.can_ronho():
             self.player.actions.append({'type': 'ronho_notice_message'})
         else:
             self.game.ronho_decisions[self.player.position] = False
 
-    def pon_notice_message(self):
-        action = {
-            'type': 'pon_notice_message',
-            'body': []
-        }
+    def pon_notice_message(self) -> None:
+        body = []
+
+        if self.game.last_teban is None:
+            raise ValueError('last_teban is None')
+        if self.game.last_dahai is None:
+            raise ValueError('last_dahai is None')
 
         done = [[0] * 2 for _ in range(34)]
         aka = [16, 52, 88]
@@ -229,7 +240,7 @@ class PlayerMessage:
                 if done[i // 4][1] == 0:
                     pais = [self.game.last_dahai, i, j]
                     if self.player.judge.can_pon(pais, self.game.last_dahai):
-                        action['body'].append({
+                        body.append({
                             'pai': self.game.last_dahai,
                             'pais': pais,
                             'dummies': self.game.make_dummies(pais),
@@ -240,7 +251,7 @@ class PlayerMessage:
                 if done[i // 4][0] == 0:
                     pais = [self.game.last_dahai, i, j]
                     if self.player.judge.can_pon(pais, self.game.last_dahai):
-                        action['body'].append({
+                        body.append({
                             'pai': self.game.last_dahai,
                             'pais': pais,
                             'dummies': self.game.make_dummies(pais),
@@ -248,16 +259,21 @@ class PlayerMessage:
                         })
                         done[i // 4][0] = 1
 
-        if len(action['body']) == 0:
-            self.game.pon_decisions[self.player.position] = [None, None]
+        if len(body) == 0:
+            self.game.pon_decisions[self.player.position] = (None, None)
         else:
-            self.player.actions.append(action)
+            self.player.actions.append({
+                'type': 'pon_notice_message',
+                'body': body
+            })
 
-    def chi_notice_message(self):
-        action = {
-            'type': 'chi_notice_message',
-            'body': []
-        }
+    def chi_notice_message(self) -> None:
+        body = []
+
+        if self.game.last_teban is None:
+            raise ValueError('last_teban is None')
+        if self.game.last_dahai is None:
+            raise ValueError('last_dahai is None')
 
         tmp = set(map(self.game.make_simple, self.player.tehai))
         tehai = []
@@ -269,14 +285,17 @@ class PlayerMessage:
         for i, j in combinations(tehai, 2):
             pais = [self.game.last_dahai, i, j]
             if self.player.judge.can_chi(pais, self.game.last_dahai):
-                action['body'].append({
+                body.append({
                     'pai': self.game.last_dahai,
                     'pais': pais,
                     'dummies': self.game.make_dummies(pais),
                     'from_who': (self.game.last_teban - self.player.position) % 4
                 })
 
-        if len(action['body']) == 0:
-            self.game.chi_decisions[self.player.position] = [None, None]
+        if len(body) == 0:
+            self.game.chi_decisions[self.player.position] = (None, None)
         else:
-            self.player.actions.append(action)
+            self.player.actions.append({
+                'type': 'chi_notice_message',
+                'body': body
+            })

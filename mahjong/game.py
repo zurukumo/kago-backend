@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from .const import Const
 from .game_action import GameAction
@@ -8,53 +8,58 @@ from .player import Player
 
 # TODO 喰い替え禁止
 class Game:
-    def __init__(self):
-        self.mode: int = Const.NORMAL_MODE
-        self.players: List[Player] = []
-        self.kyoku: int = 0
-        self.honba: int = 0
-        self.kyoutaku: int = 0
-        self.teban: int = None
-        self.last_teban: Optional[int] = None
-        self.last_tsumo: Optional[int] = None
-        self.last_dahai: Optional[int] = None
-        self.yama: List[int] = []
-        self.dora: List[int] = []
-        self.rinshan: List[int] = []
-        self.n_opened_dora: int = 0
-        self.n_kan: int = 0
-        self.pc: int = None
-        self.tsumoho_decisions: dict = dict()
-        self.ronho_decisions: dict = dict()
-        self.riichi_decisions: dict = dict()
-        self.ankan_decisions: dict = dict()
-        self.minkan_decisions: dict = dict()
-        self.pon_decisions: dict = dict()
-        self.chi_decisions: dict = dict()
-        self.dahai_decisions: dict = dict()
-        self.prev_state: Optional[int] = None
-        self.state: Optional[int] = None
-        self.dummy: List[int] = []
+    action: GameAction
+    routine: GameRoutine
 
+    mode: int
+    players: List[Player]
+    kyoku: int
+    honba: int
+    kyoutaku: int
+    teban: int
+    last_teban: Optional[int]
+    last_tsumo: Optional[int]
+    last_dahai: Optional[int]
+    yama: List[int]
+    dora: List[int]
+    rinshan: List[int]
+    n_opened_dora: int
+    n_kan: int
+    pc: int
+    tsumoho_decisions: Dict[int, bool]
+    ronho_decisions: Dict[int, bool]
+    riichi_decisions: Dict[int, bool]
+    ankan_decisions: Dict[int, Any]
+    minkan_decisions: Dict[int, Tuple[Optional[int], Optional[int]]]
+    pon_decisions: Dict[int, Tuple[Optional[List[int]], Optional[int]]]
+    chi_decisions: Dict[int, Tuple[Optional[List[int]], Optional[int]]]
+    dahai_decisions: Dict[int, int]
+    prev_state: Optional[str]
+    state: Optional[str]
+    dummy: List[int]
+
+    def __init__(self) -> None:
         self.action = GameAction(self)
         self.routine = GameRoutine(self)
 
-    def find_player(self, player_id):
+    def find_player(self, player_id: int) -> Player:
         for player in self.players:
             if player.id == player_id:
                 return player
 
-    def make_dummy(self, original):
+        raise ValueError(f'Player {player_id} not found')
+
+    def make_dummy(self, original: int) -> int:
         if self.mode in [Const.VISIBLE_MODE, Const.AUTO_MODE]:
             return original
         return self.dummy[original]
 
-    def make_dummies(self, original):
+    def make_dummies(self, original: List[int]) -> List[int]:
         if self.mode in [Const.VISIBLE_MODE, Const.AUTO_MODE]:
             return original
         return [self.dummy[o] for o in original]
 
-    def make_simple(self, original):
+    def make_simple(self, original: int) -> int:
         if original == 16:
             return 35
         if original == 52:
@@ -63,5 +68,5 @@ class Game:
             return 37
         return original // 4
 
-    def prange(self):
+    def prange(self) -> List[Player]:
         return [self.players[i % 4] for i in range(self.teban, self.teban + 4)]

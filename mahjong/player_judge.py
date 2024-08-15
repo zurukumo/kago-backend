@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from .agari import Agari
 from .const import Const
@@ -12,11 +12,14 @@ if TYPE_CHECKING:
 
 # TODO フリテンツモしない
 class PlayerJudge:
+    game: Game
+    player: Player
+
     def __init__(self, game: Game, player: Player):
         self.game = game
         self.player = player
 
-    def can_tsumoho(self):
+    def can_tsumoho(self) -> bool:
         if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
@@ -30,7 +33,7 @@ class PlayerJudge:
 
         return True
 
-    def can_dahai(self, dahai):
+    def can_dahai(self, dahai: int) -> bool:
         if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
@@ -49,7 +52,7 @@ class PlayerJudge:
 
         return True
 
-    def can_riichi_declare(self, dahai):
+    def can_riichi_declare(self, dahai: int) -> bool:
         if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
@@ -59,7 +62,7 @@ class PlayerJudge:
         if self.game.state not in [Const.TSUMO_STATE, Const.NOTICE1_STATE, Const.DAHAI_STATE]:
             # print('ステート異常')
             return False
-        huuro_types = [huuro['type'] for huuro in self.player.huuro]
+        huuro_types: List[str] = [huuro['type'] for huuro in self.player.huuro]
         if len(huuro_types) - huuro_types.count('ankan') != 0:
             # print('門前じゃない')
             return False
@@ -72,7 +75,7 @@ class PlayerJudge:
 
         return True
 
-    def can_ankan(self, ankan):
+    def can_ankan(self, ankan: List[int]) -> bool:
         if self.game.teban != self.player.position:
             # print('手番じゃない')
             return False
@@ -99,21 +102,24 @@ class PlayerJudge:
                 # print('手牌に含まれていない牌がある')
                 return False
         if self.player.is_riichi_completed:
-            shanten1 = self.player.calc_shanten(remove=[self.game.last_tsumo])
-            shanten2 = self.player.calc_shanten(remove=ankan)
-            machi1 = self.get_yuko(remove=[self.game.last_tsumo])
-            machi2 = self.get_yuko(remove=ankan)
-            if shanten1 != shanten2 or machi1 != machi2:
+            shanten = self.player.calc_shanten(remove=ankan)
+            if shanten != 0:
+                print("リーチ後にテンパイの崩れる暗槓")
+                return False
+        if self.game.last_tsumo is not None and self.player.is_riichi_declared:
+            machi1 = self.player.get_yuko(remove=[self.game.last_tsumo])
+            machi2 = self.player.get_yuko(remove=ankan)
+            if machi1 != machi2:
                 print('リーチ後に待ちの変わる暗槓')
                 return False
 
         return True
 
-    def can_ronho(self):
+    def can_ronho(self) -> bool:
         if self.game.teban == self.player.position:
             # print('捨てた本人')
             return False
-        if self.player.calc_shanten(add=[self.game.last_dahai]) >= 0:
+        if self.game.last_dahai is not None and self.player.calc_shanten(add=[self.game.last_dahai]) >= 0:
             # print('和了ってない')
             return False
         # TODO パオ
@@ -123,7 +129,7 @@ class PlayerJudge:
 
         return True
 
-    def can_pon(self, pais, pai):
+    def can_pon(self, pais: List[int], pai: int) -> bool:
         if self.game.teban == self.player.position:
             # print('捨てた本人')
             return False
@@ -155,7 +161,7 @@ class PlayerJudge:
 
         return True
 
-    def can_chi(self, pais, pai):
+    def can_chi(self, pais: List[int], pai: int) -> bool:
         if (self.game.teban + 1) % 4 != self.player.position:
             # print('次の手番じゃない')
             return False

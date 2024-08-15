@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List
 
 from .const import Const
 from .human import Human
@@ -14,25 +14,29 @@ if TYPE_CHECKING:
 
 
 class GameAction:
+    game: Game
+
     def __init__(self, game: Game):
         self.game = game
 
-    def start_game(self, mode=Const.AUTO_MODE):
+    def start_game(self, mode: int) -> None:
         self.game.mode = mode
 
         # Player関連
-        players = []
         if mode == Const.AUTO_MODE:
-            players.append(Kago(id=0, game=self.game))
-            players.append(Kago(id=1, game=self.game))
-            players.append(Kago(id=2, game=self.game))
-            players.append(Kago(id=3, game=self.game))
+            self.game.players = [
+                Kago(id=0, game=self.game),
+                Kago(id=1, game=self.game),
+                Kago(id=2, game=self.game),
+                Kago(id=3, game=self.game)
+            ]
         else:
-            players.append(Human(id=0, game=self.game))
-            players.append(Kago(id=1, game=self.game))
-            players.append(Kago(id=2, game=self.game))
-            players.append(Kago(id=3, game=self.game))
-        self.game.players = players
+            self.game.players = [
+                Human(id=0, game=self.game),
+                Kago(id=1, game=self.game),
+                Kago(id=2, game=self.game),
+                Kago(id=3, game=self.game)
+            ]
 
         # 半荘関連
         self.game.kyoku = 0
@@ -45,7 +49,7 @@ class GameAction:
         self.game.prev_state = Const.INITIAL_STATE
         self.game.state = Const.KYOKU_START_STATE
 
-    def start_kyoku(self):
+    def start_kyoku(self) -> None:
         # 各プレイヤーの手牌・河・副露の初期化
         for player in self.game.players:
             player.action.start_kyoku()
@@ -103,19 +107,19 @@ class GameAction:
         self.game.prev_state = self.game.state
         self.game.state = Const.KYOKU_START_STATE
 
-    def tsumoho(self, player: Player):
+    def tsumoho(self, player: Player) -> None:
         if player.judge.can_tsumoho():
             self.game.tsumoho_decisions[player.position] = True
             self.game.ankan_decisions[player.position] = None
             self.game.riichi_decisions[player.position] = False
 
-    def ankan(self, pais, player: Player):
+    def ankan(self, pais: List[int], player: Player) -> None:
         if player.judge.can_ankan(pais):
             self.game.tsumoho_decisions[player.position] = False
             self.game.ankan_decisions[player.position] = pais
             self.game.riichi_decisions[player.position] = False
 
-    def riichi_declare(self, player: Player):
+    def riichi_declare(self, player: Player) -> None:
         for i in player.tehai:
             if player.judge.can_riichi_declare(i):
                 self.game.tsumoho_decisions[player.position] = False
@@ -123,29 +127,29 @@ class GameAction:
                 self.game.riichi_decisions[player.position] = True
                 break
 
-    def dahai(self, dahai, player: Player):
+    def dahai(self, dahai: int, player: Player) -> None:
         if player.judge.can_dahai(dahai):
             self.game.dahai_decisions[player.position] = dahai
 
-    def ronho(self, player: Player):
+    def ronho(self, player: Player) -> None:
         if player.judge.can_ronho():
             self.game.ronho_decisions[player.position] = True
-            self.game.pon_decisions[player.position] = [None, None]
-            self.game.chi_decisions[player.position] = [None, None]
+            self.game.pon_decisions[player.position] = (None, None)
+            self.game.chi_decisions[player.position] = (None, None)
 
-    def pon(self, pais, pai, player: Player):
+    def pon(self, pais: List[int], pai: int, player: Player) -> None:
         if player.judge.can_pon(pais, pai):
             self.game.ronho_decisions[player.position] = False
-            self.game.pon_decisions[player.position] = [pais, pai]
-            self.game.chi_decisions[player.position] = [None, None]
+            self.game.pon_decisions[player.position] = (pais, pai)
+            self.game.chi_decisions[player.position] = (None, None)
 
-    def chi(self, pais, pai, player: Player):
+    def chi(self, pais: List[int], pai: int, player: Player) -> None:
         if player.judge.can_chi(pais, pai):
             self.game.ronho_decisions[player.position] = False
-            self.game.pon_decisions[player.position] = [None, None]
-            self.game.chi_decisions[player.position] = [pais, pai]
+            self.game.pon_decisions[player.position] = (None, None)
+            self.game.chi_decisions[player.position] = (pais, pai)
 
-    def ryukyoku(self):
+    def ryukyoku(self) -> Dict[str, Any]:
         is_tenpais = []
         for player in self.game.players:
             is_tenpais.append(bool(player.calc_shanten() <= 0))
@@ -181,7 +185,7 @@ class GameAction:
             'score_movements': score_movements
         }
 
-    def game_info(self):
+    def game_info(self) -> Dict[str, Any]:
         dora = self.game.dora[:self.game.n_opened_dora] + \
             self.game.make_dummies(self.game.dora[self.game.n_opened_dora:5])
         n_yama = len(self.game.yama)
@@ -194,6 +198,6 @@ class GameAction:
             'n_yama': n_yama,
         }
 
-    def next_kyoku(self):
+    def next_kyoku(self) -> None:
         if self.game.state == Const.NOTICE3_STATE:
             self.game.state = Const.KYOKU_START_STATE
