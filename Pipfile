@@ -17,5 +17,8 @@ autopep8 = "*"
 flake8 = "*"
 mypy = "*"
 
+[scripts]
+mypy = "mypy ."
+
 [requires]
 python_version = "3.10"
