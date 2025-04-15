@@ -9,6 +9,7 @@ services:
     depends_on:
       - redis
     networks:
+      - default
       - proxy
     restart: unless-stopped
 
@@ -19,6 +20,8 @@ services:
       - 6379:6379
     volumes:
       - redis-data:/data
+    networks:
+      - default
     restart: unless-stopped
 
 volumes:
